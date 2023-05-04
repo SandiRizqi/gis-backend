@@ -5,7 +5,6 @@ django-ckeditor
 django-cors-headers
 django-hosts
 django-storages
-django-elasticsearch-dsl
 djangorestframework
 django-editorjs
 whitenoise
@@ -19,17 +18,11 @@ django-markdownify
 dj-database-url
 requests
 pyocclient
-midtransclient
-CurrencyConverter
 djangorestframework-simplejwt
-channels
-channels_redis
 django-daterangefilter
 django-admin-numeric-filter
 django-admin-charts
 pillow
-firebase-admin
-pyrebase
 earthengine-api
 django-leaflet
 graphene-django
