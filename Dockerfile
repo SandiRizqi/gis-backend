@@ -3,8 +3,6 @@
 FROM python:3.8-slim
 USER appuser
 
-WORKDIR /app
-
 # Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE=1
 
@@ -24,6 +22,8 @@ RUN pip install numpy \
 COPY requirements.txt .
 RUN apt-get -y install gcc
 RUN python -m pip install -r requirements.txt
+
+WORKDIR /app
 
 COPY . /app
 
