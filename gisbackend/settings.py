@@ -28,7 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-LOGIN_REDIRECT_URL = '/backend/admin/'
+LOGIN_REDIRECT_URL = 'web-gisdev1.tap-agri.com/backend/'
 
 
 # Application definition
