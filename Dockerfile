@@ -9,7 +9,8 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
 RUN apt-get clean 
-RUN apt-get install -y \
+RUN apt-get update \
+    && apt-get install -y \
         build-essential \
         libgdal-dev \
         python3-dev
