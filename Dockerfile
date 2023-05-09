@@ -4,7 +4,7 @@ FROM python:3.8-slim
 USER appuser
 
 WORKDIR /app
-RUN apt-get update && apt-get install curl
+
 # Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE=1
 
