@@ -1,6 +1,8 @@
 from django.contrib.gis.db import models
 from django.utils import timezone
 from django.contrib.postgres.fields import ArrayField
+import json
+from django.contrib.gis.geos import GEOSGeometry
 
 event_status = (
     ("ACTIVE", "ACTIVE"),
@@ -20,9 +22,30 @@ class PALMS_COMPANY_LIST(models.Model):
     CREATED = models.DateTimeField(default=timezone.now)
     UPDATED = models.DateTimeField(auto_now=True)
     geom = models.MultiPolygonField(srid=4326, geography=True, null=True, blank=True, editable=True)
+    geojson = models.FileField(upload_to='geojson', blank=True, null=True, verbose_name='HGU_geojson_file')
 
     def __str__(self):
         return '{}'.format(str(self.COMP_NAME))
+    
+    def save(self, *args, **kwargs):
+        self.LAYER_ID = self.COMP_CODE
+        self.COMP_ID = self.COMP_CODE
+        if self.geojson:
+            objects = json.load(self.geojson)
+            coordinates = list()
+            for ft in objects['features']:
+                geom_str = ft['geometry']['coordinates']
+                coordinates.append(geom_str)
+            multipolygon = {
+                "type": "MultiPolygon",
+                "coordinates": coordinates
+            }
+            self.polygon = GEOSGeometry(json.dumps(multipolygon))
+        super().save(*args, **kwargs)
+
+    
+    
+
     
 class FIRE_HOTSPOT(models.Model):
     UID = models.BigIntegerField()
