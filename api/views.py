@@ -2,12 +2,19 @@ from django.shortcuts import render
 import json
 import requests
 from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.contrib.gis.geos import GEOSGeometry
-from rest_framework.parsers import JSONParser
-from .models import FIRE_HOTSPOT
-from .functions import *
+from django.core.serializers import serialize
+from .models import FIRE_HOTSPOT, FIRE_EVENTS_ALERT_LIST, PALMS_COMPANY_LIST
+from .serializers import *
 import subprocess
+
+
+from rest_framework.parsers import JSONParser
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 
 
 
@@ -40,3 +47,75 @@ def GET_HOTSPOT(request):
         return JsonResponse({
             "message": "Function is running in the background"
         })
+    
+@csrf_exempt
+def GET_HOTSPOT_ALERT(request):
+    if request.method == "GET":
+        subprocess.Popen(['python', './function/getHotspotAlert.py'])
+        return JsonResponse({
+            "message": "Function is running in the background"
+        })
+    
+
+@csrf_exempt
+def LIST_HOTSPOT(request):
+    conf = int(request.GET['conf'])
+    startdate = str(request.GET['startdate'])
+    enddate = str(request.GET['enddate'])
+    if conf:
+        HOTSPOTS = FIRE_HOTSPOT.objects.filter(DATE__range=[startdate, enddate], CONF=conf)
+    else:
+        HOTSPOTS = FIRE_HOTSPOT.objects.filter(DATE__range=[startdate, enddate])
+    data = serialize('geojson', HOTSPOTS, fields=('UID', 'DATE', 'TIME', 'CONF', 'RADIUS', 'KECAMATAN', 'KEBUPATEN', 'PROVINSI', 'SATELLITE'), geometry_field='geom')
+    return HttpResponse(data, content_type='application/json')
+
+@csrf_exempt
+@api_view(['GET', 'POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def LIST_FIRE_EVENTS(request):
+    if request.method == "GET":
+        COMP = int(request.GET['comp'])
+        status = request.GET['status']
+        if COMP:
+            events = FIRE_EVENTS_ALERT_LIST.objects.filter(COMP=COMP, STATUS=status)
+        else:
+            events = FIRE_EVENTS_ALERT_LIST.objects.filter(STATUS=status)
+        
+        data = serialize('geojson', events, fields=('COMP', 'COMP_NAME', 'EVENT_ID', 'EVENT_DATE', 'EVENT_TIME','EVENT_CAT', 'CONF', 'SATELLITE', 'RADIUS', "STATUS","CATEGORY", "distance"), geometry_field='geom')
+        return HttpResponse(data, content_type='application/json')
+    
+    if request.method == "POST":
+        data = JSONParser().parse(request)
+        if not FIRE_EVENTS_ALERT_LIST.objects.filter(EVENT_ID=data['EVENT_ID']).exists():
+            PT = PALMS_COMPANY_LIST.objects.get(pk=data['COMP'])
+            COMP = PT
+            COMP_NAME = data['COMP_NAME']
+            COMP_GROUP = data['COMP_GROUP']
+            EVENT_ID = data['EVENT_ID']
+            EVENT_DATE = data['EVENT_DATE']
+            EVENT_TIME = data['EVENT_TIME']
+            CONF = data['CONF']
+            SATELLITE = data['SATELLITE']
+            RADIUS = data['RADIUS']
+            KECAMATAN = data['KECAMATAN']
+            KEBUPATEN = data['KEBUPATEN']
+            PROVINSI = data['PROVINSI']
+            distance = data['distance']
+            CATEGORY = data['CATEGORY']
+            geom = {
+                "type": "Point",
+                "coordinates": data['coordinates']}
+            geom = GEOSGeometry(json.dumps(geom))
+            FIRE_EVENTS_ALERT_LIST.objects.create(COMP=COMP, COMP_NAME=COMP_NAME, COMP_GROUP=COMP_GROUP,EVENT_ID=EVENT_ID, EVENT_DATE=EVENT_DATE, EVENT_TIME=EVENT_TIME, SATELLITE=SATELLITE, RADIUS=RADIUS, CONF=CONF, KECAMATAN=KECAMATAN, KEBUPATEN=KEBUPATEN, PROVINSI=PROVINSI, distance=distance, geom=geom, CATEGORY=CATEGORY)
+        return JsonResponse({"message": "POST Successfully" })
+
+
+
+class FireAlertAPIViewset(viewsets.ModelViewSet):
+    queryset = FIRE_EVENTS_ALERT_LIST.objects.all()
+    serializer_class = FireEventSerilizer
+
+    def get_permissions(self):
+        permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]

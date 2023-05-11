@@ -4,4 +4,4 @@ from django.http import HttpResponse, JsonResponse
 
 def TestURL(request):
     return JsonResponse ({"message": "Service is online",
-                          "version": "V1.2" })
+                          "version": "V1.3" })
