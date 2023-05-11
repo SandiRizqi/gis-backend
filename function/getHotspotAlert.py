@@ -11,8 +11,8 @@ today = datetime.date.today()
 #host = 'https://backend.geo-circle.com/'
 host = 'http://127.0.0.1:9000/'
 token = 'Token 96188a88794241ebbd4c9594cb13fbc9f7b80dd2'
-
-db_connection_url = "postgresql://tap_gis:T4pGreenGis88@postgresgis.tap-agri.com:5432/db_gis"
+db_connection_url = "postgresql://tap_gis:tap_gis@dbpostgresdev.tap-agri.com:5432/db_gis"
+#db_connection_url = "postgresql://tap_gis:T4pGreenGis88@postgresgis.tap-agri.com:5432/db_gis"
 con = create_engine(db_connection_url)
 table = "api_palms_company_list"
 column = "COMP_GROUP"
