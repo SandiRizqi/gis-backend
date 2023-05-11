@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
 
     'corsheaders',
+    'leaflet',
 
 
 
@@ -160,6 +161,13 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+LEAFLET_CONFIG = {
+    'DEFAULT_CENTER': (0, 112),
+    'DEFAULT_ZOOM': 5,
+    'SCALE': 'both',
+    'ATTRIBUTION_PREFIX': 'Created by TAPGIS @ 2022',
+}
 
-GDAL_LIBRARY_PATH = '/opt/homebrew/opt/gdal/lib/libgdal.dylib'
-GEOS_LIBRARY_PATH = '/opt/homebrew/opt/geos/lib/libgeos_c.dylib'
+
+#GDAL_LIBRARY_PATH = '/opt/homebrew/opt/gdal/lib/libgdal.dylib'
+#GEOS_LIBRARY_PATH = '/opt/homebrew/opt/geos/lib/libgeos_c.dylib'
