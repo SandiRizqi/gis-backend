@@ -62,6 +62,9 @@ class FIRE_HOTSPOT(models.Model):
     class Meta:
         ordering = ['-UID']
 
+
+        
+
 class FIRE_EVENTS_ALERT_LIST(models.Model):
     COMP = models.ForeignKey(PALMS_COMPANY_LIST, on_delete=models.CASCADE, related_name='comp_fire', default="")
     COMP_NAME = models.CharField(max_length=250)
