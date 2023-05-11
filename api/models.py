@@ -28,8 +28,7 @@ class PALMS_COMPANY_LIST(models.Model):
         return '{}'.format(str(self.COMP_NAME))
     
     def save(self, *args, **kwargs):
-        self.LAYER_ID = self.COMP_CODE
-        self.COMP_ID = self.COMP_CODE
+
         if self.geojson:
             objects = json.load(self.geojson)
             coordinates = list()
@@ -40,7 +39,7 @@ class PALMS_COMPANY_LIST(models.Model):
                 "type": "MultiPolygon",
                 "coordinates": coordinates
             }
-            self.polygon = GEOSGeometry(json.dumps(multipolygon))
+            self.geom = GEOSGeometry(json.dumps(multipolygon))
         super().save(*args, **kwargs)
 
     
