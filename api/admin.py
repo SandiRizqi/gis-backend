@@ -1,5 +1,5 @@
 from django.contrib import admin
-from models import PALMS_COMPANY_LIST
+from .models import PALMS_COMPANY_LIST
 from leaflet.admin import LeafletGeoAdmin
 
 
