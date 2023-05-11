@@ -125,18 +125,31 @@ DATABASES = {
 
 '''
 
-
-DATABASES = {
+if MODE == "PROD":
+    DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'db_gis',
         'USER': 'tap_gis',
-        'PASSWORD': 'tap_gis',
-        'HOST': 'dbpostgresdev.tap-agri.com',
+        'PASSWORD': 'T4pGreenGis88',
+        'HOST': 'postgresgis.tap-agri.com',
         'PORT': '5432',
         'CONN_MAX_AGE': 500
     }
-}
+    }
+    
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            'NAME': 'db_gis',
+            'USER': 'tap_gis',
+            'PASSWORD': 'tap_gis',
+            'HOST': 'dbpostgresdev.tap-agri.com',
+            'PORT': '5432',
+            'CONN_MAX_AGE': 500
+        }
+    }
 
 
 

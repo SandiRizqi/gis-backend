@@ -35,6 +35,7 @@ class PALMS_COMPANY_LIST(models.Model):
             for ft in objects['features']:
                 geom_str = ft['geometry']['coordinates']
                 coordinates.append(geom_str)
+            print(coordinates)
             multipolygon = {
                 "type": "MultiPolygon",
                 "coordinates": coordinates
