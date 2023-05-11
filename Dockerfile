@@ -33,7 +33,7 @@ RUN chmod -R 777 /app
 #RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER root
 
-RUN python manage.py makemigrations
+#RUN python manage.py makemigrations
 RUN python manage.py migrate
 
 
