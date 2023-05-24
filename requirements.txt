@@ -26,3 +26,8 @@ pillow
 earthengine-api
 django-leaflet
 graphene-django
+sqlalchemy
+rasterio
+turfpy
+shapely
+geopandas

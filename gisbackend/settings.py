@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
+import mimetypes
+
+
+mimetypes.add_type("text/css", ".css", True)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,9 +28,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-=-u@!p@dk3#nj)gra9m%sgs2+1=uo6v_8)dq+z=zvia3eipqsh'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
+
+#MODE = "PROD"
+MODE = "DEV"
 
 ALLOWED_HOSTS = ['*']
+
+#LOGIN_REDIRECT_URL = 'web-gisdev1.tap-agri.com/admin/'
 
 
 # Application definition
@@ -46,11 +55,17 @@ INSTALLED_APPS = [
 
 
     'corsheaders',
+    'leaflet',
+
+
+
+    'api'
 
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -94,6 +109,7 @@ DATABASES = {
 }
 
 """
+'''
 
 DATABASES = {
     'default': {
@@ -106,6 +122,35 @@ DATABASES = {
         'CONN_MAX_AGE': 500
     }
 }
+
+'''
+
+if MODE == "PROD":
+    DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'db_gis',
+        'USER': 'tap_gis',
+        'PASSWORD': 'T4pGreenGis88',
+        'HOST': 'postgresgis.tap-agri.com',
+        'PORT': '5432',
+        'CONN_MAX_AGE': 500
+    }
+    }
+
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            'NAME': 'db_gis',
+            'USER': 'tap_gis',
+            'PASSWORD': 'tap_gis',
+            'HOST': 'dbpostgresdev.tap-agri.com',
+            'PORT': '5432',
+            'CONN_MAX_AGE': 500
+        }
+    }
+
 
 
 
@@ -126,6 +171,15 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+
+
+REST_FRAMEWORK = {
+
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
 
 
 # Internationalization
@@ -153,6 +207,15 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+LEAFLET_CONFIG = {
+    'DEFAULT_CENTER': (0, 112),
+    'DEFAULT_ZOOM': 5,
+    'SCALE': 'both',
+    'ATTRIBUTION_PREFIX': 'Created by TAPGIS @ 2022',
+}
 
-#GDAL_LIBRARY_PATH = '/opt/homebrew/opt/gdal/lib/libgdal.dylib'
-#GEOS_LIBRARY_PATH = '/opt/homebrew/opt/geos/lib/libgeos_c.dylib'
+if os.path.exists('/opt/homebrew/opt/gdal/lib/libgdal.dylib'):
+    GDAL_LIBRARY_PATH = '/opt/homebrew/opt/gdal/lib/libgdal.dylib'
+    GEOS_LIBRARY_PATH = '/opt/homebrew/opt/geos/lib/libgeos_c.dylib'
+else:
+    pass
