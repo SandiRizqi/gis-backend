@@ -10,4 +10,5 @@ urlpatterns = [
     path('hotspot/', views.LIST_HOTSPOT),
     path('hotspotevents/', views.LIST_FIRE_EVENTS),
     path('endpoints/', include(router.urls), name="endpoints" ),
+    path('getdeforestations/', views.GET_DEFORESTATIONS),
 ]
