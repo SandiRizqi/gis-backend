@@ -31,3 +31,4 @@ rasterio
 turfpy
 shapely
 geopandas
+python-decouple
