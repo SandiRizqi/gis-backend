@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import PALMS_COMPANY_LIST, FIRE_EVENTS_ALERT_LIST, FIRE_HOTSPOT
+from .models import PALMS_COMPANY_LIST, FIRE_EVENTS_ALERT_LIST, FIRE_HOTSPOT, DEFORESTATIONS_EVENTS_ALERT_LIST
 from leaflet.admin import LeafletGeoAdmin
 
 
@@ -17,3 +17,4 @@ class FireEventsAdmin(admin.ModelAdmin):
 admin.site.register(PALMS_COMPANY_LIST, COMPAdmin)
 admin.site.register(FIRE_EVENTS_ALERT_LIST, FireEventsAdmin)
 admin.site.register(FIRE_HOTSPOT)
+admin.site.register(DEFORESTATIONS_EVENTS_ALERT_LIST)

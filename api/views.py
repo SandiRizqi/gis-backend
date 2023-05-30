@@ -8,6 +8,10 @@ from django.core.serializers import serialize
 from .models import FIRE_HOTSPOT, FIRE_EVENTS_ALERT_LIST, PALMS_COMPANY_LIST
 from .serializers import *
 import subprocess
+import ee
+import datetime
+from turfpy.measurement import area
+import json
 
 
 from rest_framework.parsers import JSONParser
@@ -119,3 +123,17 @@ class FireAlertAPIViewset(viewsets.ModelViewSet):
     def get_permissions(self):
         permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
+    
+
+def initEarthEngine():
+    service_account = 'earth-engine@geocircle-512f9.iam.gserviceaccount.com'
+    credentials = ee.ServiceAccountCredentials(service_account, './geocircle-512f9-6640610a0602.json')
+    ee.Initialize(credentials)
+    print("Initialized")
+    
+def GET_DEFORESTATIONS(request):
+    initEarthEngine()
+
+    return JsonResponse({
+        "message": "POST Successfully"
+    })

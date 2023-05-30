@@ -63,7 +63,7 @@ class FIRE_HOTSPOT(models.Model):
         ordering = ['-UID']
 
 
-        
+
 
 class FIRE_EVENTS_ALERT_LIST(models.Model):
     COMP = models.ForeignKey(PALMS_COMPANY_LIST, on_delete=models.CASCADE, related_name='comp_fire', default="")
@@ -87,4 +87,21 @@ class FIRE_EVENTS_ALERT_LIST(models.Model):
         ordering = ['-EVENT_ID']
 
     def __str__(self):
-        return '{}-{}'.format(str(self.EVENT_ID), self.COMP_NAME)     
+        return '{}-{}'.format(str(self.EVENT_ID), self.COMP_NAME)
+
+# Create your models here.
+class DEFORESTATIONS_EVENTS_ALERT_LIST(models.Model):
+    COMP = models.ForeignKey(PALMS_COMPANY_LIST, on_delete=models.CASCADE, related_name='comp_list', default="")
+    EVENT_ID = models.CharField(max_length=250)
+    ALERT_DATE = models.DateTimeField(default=timezone.now)
+    CREATED = models.DateTimeField(default=timezone.now)
+    UPDATED = models.DateTimeField(auto_now=True)
+    AREA = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
+    READ_BY = ArrayField(models.CharField(max_length=250, null=True, blank=True), default=list, blank=True, null=True)
+    geom = models.MultiPolygonField(srid=4326, geography=True, null=True, blank=True, editable=True)
+
+    class Meta:
+        ordering = ['-ALERT_DATE']
+ 
+    def __str__(self):
+        return '{}-{}'.format(str(self.COMP), self.ALERT_DATE)

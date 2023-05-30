@@ -1,7 +1,11 @@
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
+from .settings import env
+
 
 
 
 def TestURL(request):
-    return JsonResponse ({"message": "Service is online",
-                          "version": "V1.3" })
+    return JsonResponse ({
+        "mode": env.get('MODE'),
+        "message": "Service is online",
+        "version": "V1.3" })
