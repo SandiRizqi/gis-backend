@@ -13,7 +13,9 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from pathlib import Path
 import os
 import mimetypes
+from decouple import Config, RepositoryEnv
 
+env=Config(RepositoryEnv('.dev.env'))
 
 mimetypes.add_type("text/css", ".css", True)
 
@@ -30,8 +32,7 @@ SECRET_KEY = 'django-insecure-=-u@!p@dk3#nj)gra9m%sgs2+1=uo6v_8)dq+z=zvia3eipqsh
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-#MODE = "PROD"
-MODE = "DEV"
+
 
 ALLOWED_HOSTS = ['*']
 
@@ -125,31 +126,17 @@ DATABASES = {
 
 '''
 
-if MODE == "PROD":
-    DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'db_gis',
-        'USER': 'tap_gis',
-        'PASSWORD': 'T4pGreenGis88',
-        'HOST': 'postgresgis.tap-agri.com',
-        'PORT': '5432',
-        'CONN_MAX_AGE': 500
-    }
-    }
-
-else:
-    DATABASES = {
+DATABASES = {
         'default': {
             'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': 'db_gis',
-            'USER': 'tap_gis',
-            'PASSWORD': 'tap_gis',
-            'HOST': 'dbpostgresdev.tap-agri.com',
-            'PORT': '5432',
+            'NAME': env.get('DB_NAME'),
+            'USER': env.get('DB_USER'),
+            'PASSWORD': env.get('DB_PASSWORD'),
+            'HOST': env.get('DB_HOST'),
+            'PORT': env.get('DB_PORT'),
             'CONN_MAX_AGE': 500
         }
-    }
+}
 
 
 

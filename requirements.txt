@@ -31,3 +31,12 @@ rasterio
 turfpy
 shapely
 geopandas
+python-decouple
+
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+google-api-python-client
+earthengine-api
+psycopg2
+sqlalchemy
