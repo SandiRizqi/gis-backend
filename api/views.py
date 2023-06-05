@@ -12,6 +12,7 @@ import ee
 import datetime
 from turfpy.measurement import area
 import json
+from gisbackend.settings import ENV_URL
 
 
 from rest_framework.parsers import JSONParser
@@ -27,9 +28,12 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 def ADD_HOTSPOT(request):
     if request.method == "POST":
         hotspot = JSONParser().parse(request)
-        UID = int(hotspot['id'])
+        UID = hotspot['id']
         CONF = int(hotspot['conf'])
         RADIUS = int(hotspot['radius'])
+        SOURCE = str(hotspot['source'])
+        LONG = round(float(hotspot['long']), 3)
+        LAT = round(float(hotspot['lat']), 3)
         DATE = str(hotspot['date'])
         TIME = str(hotspot['times'])
         SATELLITE = str(hotspot['sat']).upper()
@@ -38,8 +42,8 @@ def ADD_HOTSPOT(request):
         KECAMATAN = str(hotspot['kecamatan'])
         geometry = hotspot['geometry']
         geom = GEOSGeometry(json.dumps(geometry))
-        if not FIRE_HOTSPOT.objects.filter(UID=UID).exists():
-            FIRE_HOTSPOT.objects.create(UID=UID, CONF=CONF, DATE=DATE, TIME=TIME, RADIUS=RADIUS, SATELLITE=SATELLITE, PROVINSI=PROVINSI, KEBUPATEN=KEBUPATEN, KECAMATAN=KECAMATAN, geom=geom)
+        if not FIRE_HOTSPOT.objects.filter(DATE=DATE, LONG=LONG, LAT=LAT).exists():
+            FIRE_HOTSPOT.objects.create(UID=UID, CONF=CONF, DATE=DATE, TIME=TIME, RADIUS=RADIUS, SATELLITE=SATELLITE, PROVINSI=PROVINSI, KEBUPATEN=KEBUPATEN, KECAMATAN=KECAMATAN, SOURCE=SOURCE, LONG=LONG, LAT=LAT, geom=geom)
             return JsonResponse({"message": "Added Successfully" })
         else:
             return JsonResponse({"message": "Data Already Exist" })
@@ -124,16 +128,10 @@ class FireAlertAPIViewset(viewsets.ModelViewSet):
         permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
     
-
-def initEarthEngine():
-    service_account = 'earth-engine@geocircle-512f9.iam.gserviceaccount.com'
-    credentials = ee.ServiceAccountCredentials(service_account, './geocircle-512f9-6640610a0602.json')
-    ee.Initialize(credentials)
-    print("Initialized")
     
 def GET_DEFORESTATIONS(request):
-    initEarthEngine()
-
+    #print(ENV_URL)
+    subprocess.Popen(['python', './function/getDF.py', ' -env ' + '{}'.format(ENV_URL)])
     return JsonResponse({
         "message": "POST Successfully"
     })

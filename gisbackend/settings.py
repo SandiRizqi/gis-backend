@@ -15,7 +15,9 @@ import os
 import mimetypes
 from decouple import Config, RepositoryEnv
 
-env=Config(RepositoryEnv('.dev.env'))
+
+ENV_URL = '.prod.env'
+env=Config(RepositoryEnv(ENV_URL))
 
 mimetypes.add_type("text/css", ".css", True)
 

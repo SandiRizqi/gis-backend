@@ -15,6 +15,8 @@ fire_cat = (
     ("BAHAYA", "BAHAYA")
 )
 
+sources = (("LAPAN", "LAPAN"),
+           ("SIPONGI", "SIPONGI"))
 
 class PALMS_COMPANY_LIST(models.Model):
     COMP_NAME = models.CharField(max_length=250)
@@ -48,7 +50,7 @@ class PALMS_COMPANY_LIST(models.Model):
 
     
 class FIRE_HOTSPOT(models.Model):
-    UID = models.BigIntegerField()
+    UID = models.CharField(max_length=250)
     DATE = models.DateField(default=timezone.now)
     TIME = models.TimeField()
     CONF = models.IntegerField()
@@ -57,6 +59,9 @@ class FIRE_HOTSPOT(models.Model):
     KECAMATAN = models.CharField(max_length=100)
     KEBUPATEN = models.CharField(max_length=100)
     PROVINSI = models.CharField(max_length=100)
+    SOURCE = models.CharField(max_length=50, choices=sources, blank=True, null=True)
+    LONG = models.DecimalField(max_digits=15, decimal_places=3, blank=True, null=True)
+    LAT = models.DecimalField(max_digits=15, decimal_places=3, blank=True, null=True)
     geom = models.PointField(srid=4326, geography=True, null=True, blank=True, editable=True)
 
     class Meta:
