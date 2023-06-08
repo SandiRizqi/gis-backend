@@ -10,8 +10,8 @@ class COMPAdmin(LeafletGeoAdmin):
 
 class FireEventsAdmin(admin.ModelAdmin):
     model = FIRE_EVENTS_ALERT_LIST
-    ordering = ('-EVENT_ID',)
-    list_display = ["EVENT_ID", "COMP_NAME", "EVENT_DATE", "distance"]
+    ordering = ('-EVENT_DATE',)
+    list_display = ["COMP_NAME", "EVENT_DATE", "distance"]
 
 
 admin.site.register(PALMS_COMPANY_LIST, COMPAdmin)

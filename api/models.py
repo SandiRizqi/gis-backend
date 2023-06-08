@@ -74,7 +74,7 @@ class FIRE_EVENTS_ALERT_LIST(models.Model):
     COMP = models.ForeignKey(PALMS_COMPANY_LIST, on_delete=models.CASCADE, related_name='comp_fire', default="")
     COMP_NAME = models.CharField(max_length=250)
     COMP_GROUP = models.CharField(max_length=250, null=True, blank=True)
-    EVENT_ID = models.BigIntegerField()
+    #EVENT_ID = models.CharField(max_length=250)
     EVENT_DATE = models.DateField(default=timezone.now)
     EVENT_TIME = models.TimeField()
     CONF = models.IntegerField()
@@ -86,10 +86,12 @@ class FIRE_EVENTS_ALERT_LIST(models.Model):
     distance = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
     STATUS = models.CharField(max_length=50, choices=event_status, blank=True, null=True, default="ACTIVE")
     CATEGORY = models.CharField(max_length=50, choices=fire_cat, blank=True, null=True, default="AMAN")
+    LONG = models.DecimalField(max_digits=15, decimal_places=3, blank=True, null=True)
+    LAT = models.DecimalField(max_digits=15, decimal_places=3, blank=True, null=True)
     geom = models.PointField(srid=4326, geography=True, null=True, blank=True, editable=True)
 
     class Meta:
-        ordering = ['-EVENT_ID']
+        ordering = ['-EVENT_DATE']
 
     def __str__(self):
         return '{}-{}'.format(str(self.EVENT_ID), self.COMP_NAME)

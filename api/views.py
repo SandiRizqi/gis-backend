@@ -90,17 +90,17 @@ def LIST_FIRE_EVENTS(request):
         else:
             events = FIRE_EVENTS_ALERT_LIST.objects.filter(STATUS=status)
         
-        data = serialize('geojson', events, fields=('COMP', 'COMP_NAME', 'EVENT_ID', 'EVENT_DATE', 'EVENT_TIME','EVENT_CAT', 'CONF', 'SATELLITE', 'RADIUS', "STATUS","CATEGORY", "distance"), geometry_field='geom')
+        data = serialize('geojson', events, fields=('COMP', 'COMP_NAME', 'EVENT_DATE', 'EVENT_TIME','EVENT_CAT', 'CONF', 'SATELLITE', 'RADIUS', "STATUS","CATEGORY", "distance"), geometry_field='geom')
         return HttpResponse(data, content_type='application/json')
     
     if request.method == "POST":
         data = JSONParser().parse(request)
-        if not FIRE_EVENTS_ALERT_LIST.objects.filter(EVENT_ID=data['EVENT_ID']).exists():
+        if not FIRE_EVENTS_ALERT_LIST.objects.filter(EVENT_DATE=data['EVENT_DATE'], LONG=data['LONG'], LAT=data['LAT']).exists():
             PT = PALMS_COMPANY_LIST.objects.get(pk=data['COMP'])
             COMP = PT
             COMP_NAME = data['COMP_NAME']
             COMP_GROUP = data['COMP_GROUP']
-            EVENT_ID = data['EVENT_ID']
+            #EVENT_ID = data['EVENT_ID']
             EVENT_DATE = data['EVENT_DATE']
             EVENT_TIME = data['EVENT_TIME']
             CONF = data['CONF']
@@ -111,12 +111,16 @@ def LIST_FIRE_EVENTS(request):
             PROVINSI = data['PROVINSI']
             distance = data['distance']
             CATEGORY = data['CATEGORY']
+            LONG = data['LONG']
+            LAT= data['LAT']
             geom = {
                 "type": "Point",
                 "coordinates": data['coordinates']}
             geom = GEOSGeometry(json.dumps(geom))
-            FIRE_EVENTS_ALERT_LIST.objects.create(COMP=COMP, COMP_NAME=COMP_NAME, COMP_GROUP=COMP_GROUP,EVENT_ID=EVENT_ID, EVENT_DATE=EVENT_DATE, EVENT_TIME=EVENT_TIME, SATELLITE=SATELLITE, RADIUS=RADIUS, CONF=CONF, KECAMATAN=KECAMATAN, KEBUPATEN=KEBUPATEN, PROVINSI=PROVINSI, distance=distance, geom=geom, CATEGORY=CATEGORY)
-        return JsonResponse({"message": "POST Successfully" })
+            FIRE_EVENTS_ALERT_LIST.objects.create(COMP=COMP, COMP_NAME=COMP_NAME, COMP_GROUP=COMP_GROUP, EVENT_DATE=EVENT_DATE, EVENT_TIME=EVENT_TIME, SATELLITE=SATELLITE, RADIUS=RADIUS, CONF=CONF, KECAMATAN=KECAMATAN, KEBUPATEN=KEBUPATEN, PROVINSI=PROVINSI, distance=distance, geom=geom, CATEGORY=CATEGORY, LONG=LONG, LAT=LAT)
+            return JsonResponse({"message": "Added Successfully" })
+        else:
+            return JsonResponse({"message": "Data Already Exist" })
 
 
 

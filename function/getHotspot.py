@@ -23,7 +23,7 @@ for feature in data['features']:
     detail['date'] = str(detail['time']).split()[0]
     detail['times'] = str(detail['time']).split()[1]
     respnse = requests.post(url, json=detail, headers=headers)
-    print(respnse.json())
+    print("LAPAN :", respnse.json())
 
 siponi_url = 'https://sipongi.menlhk.go.id/api/opsroom/indoHotspot?wilayah=IN&filterperiode=false&late=24&satelit[]=NASA-MODIS&satelit[]=NASA-SNPP&satelit[]=NASA-NOAA20&confidence[]=high&confidence[]=medium&confidence[]=low'
 data = requests.get(siponi_url)

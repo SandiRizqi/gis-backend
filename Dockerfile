@@ -1,5 +1,7 @@
 FROM python:3.8-slim
 
+ENV ENVMODE=Development
+
 EXPOSE 9000
 
 # Keeps Python from generating .pyc files in the container
