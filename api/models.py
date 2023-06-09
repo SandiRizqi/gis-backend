@@ -94,7 +94,7 @@ class FIRE_EVENTS_ALERT_LIST(models.Model):
         ordering = ['-EVENT_DATE']
 
     def __str__(self):
-        return '{}-{}'.format(str(self.EVENT_ID), self.COMP_NAME)
+        return '{}-{}'.format(str(self.EVENT_DATE), self.COMP_NAME)
 
 # Create your models here.
 class DEFORESTATIONS_EVENTS_ALERT_LIST(models.Model):
