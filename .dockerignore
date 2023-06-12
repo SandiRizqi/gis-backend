@@ -1,8 +1,8 @@
 **/__pycache__
-**/.venv
+#**/.venv
 **/.classpath
 **/.dockerignore
-**/.env
+#**/.env
 **/.git
 **/.gitignore
 **/.project
