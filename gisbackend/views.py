@@ -1,13 +1,17 @@
 from django.http import JsonResponse
-import os
+from .settings import ENV_URL
 
 
 
 
 def TestURL(request):
-    MODE = os.environ["ENVMODE"]
+    if ENV_URL == ".env":
+        MODE = "Production"
+    else:
+        MODE = "Development"
 
     return JsonResponse ({
         "mode": MODE,
+        "env": ENV_URL,
         "message": "Service is online",
         "version": "V1.3" })
