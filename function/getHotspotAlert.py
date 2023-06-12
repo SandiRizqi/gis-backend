@@ -1,24 +1,39 @@
 import geopandas as gpd
 import requests
 import json
-
+import os
 from sqlalchemy import create_engine
 from sqlalchemy import text
 import datetime
 
-today = datetime.date.today()
 
-#host = 'https://backend.geo-circle.com/'
+
+
+if os.path.exists('./.dev.env'):
+    MODE = "Development"
+else:
+    MODE = "Production"
+
+    
+today = datetime.date.today()
 host = 'http://127.0.0.1:9000/'
-token = 'Token c63ebf26351c6f5dce1f2eb12930544caad04572'
-db_connection_url = "postgresql://tap_gis:tap_gis@dbpostgresdev.tap-agri.com:5432/db_gis"
-#db_connection_url = "postgresql://tap_gis:T4pGreenGis88@postgresgis.tap-agri.com:5432/db_gis"
+
+
+if MODE == "Production":
+    token ='Token 96188a88794241ebbd4c9594cb13fbc9f7b80dd2' #PROD
+    db_connection_url = "postgresql://tap_gis:T4pGreenGis88@postgresgis.tap-agri.com:5432/db_gis"
+else:
+    token = 'Token c63ebf26351c6f5dce1f2eb12930544caad04572' #DEV
+    db_connection_url = "postgresql://tap_gis:tap_gis@dbpostgresdev.tap-agri.com:5432/db_gis"
+
+
+
 con = create_engine(db_connection_url)
 table = "api_palms_company_list"
 column = "COMP_GROUP"
 value = "Triputra Group"
 #sql = "SELECT * FROM \"{}\" WHERE \"{}\" = \'{}\'".format(table, column, value)
-sql = "SELECT * FROM \"{}\"".format(table, column, value)
+sql = "SELECT * FROM \"{}\"".format(table)
 polygons = gpd.GeoDataFrame.from_postgis(text(sql), con, geom_col='geom').to_crs("+proj=utm +zone=50 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
 
 point = requests.get(host + 'api/hotspot/?conf=0&startdate={}&enddate={}'.format(today, today))
@@ -35,7 +50,7 @@ def sendAlert(featurescollections):
                 'COMP' : int(attr['id']),
                 'COMP_NAME' : attr['COMP_NAME'],
                 'COMP_GROUP' : attr['COMP_GROUP'],
-                'EVENT_ID' : int(attr['UID']),
+                #'EVENT_ID' : str(attr['UID']),
                 'EVENT_DATE' : attr['DATE'],
                 'EVENT_TIME' : attr['TIME'],
                 'CONF' : int(attr['CONF']),
@@ -45,6 +60,8 @@ def sendAlert(featurescollections):
                 'KEBUPATEN' : attr['KEBUPATEN'],
                 'PROVINSI' : attr['PROVINSI'],
                 'CATEGORY' : attr['CATEGORY'],
+                'LONG': round(ft['geometry']['coordinates'][0], 3),
+                'LAT': round(ft['geometry']['coordinates'][1], 3),
                 'distance' : float(attr['distance']),
                 'coordinates' : ft['geometry']['coordinates']
             }
@@ -57,7 +74,7 @@ def sendAlert(featurescollections):
 
             response = requests.post(host + 'api/hotspotevents/', data=json.dumps(post), headers=headers)
             response.raise_for_status()  
-            print("Request succesfully")
+            print(response.json())
         except requests.exceptions.RequestException:
             print(f"Request failed with error:")
             continue

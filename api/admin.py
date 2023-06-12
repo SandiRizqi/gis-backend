@@ -10,11 +10,16 @@ class COMPAdmin(LeafletGeoAdmin):
 
 class FireEventsAdmin(admin.ModelAdmin):
     model = FIRE_EVENTS_ALERT_LIST
-    ordering = ('-EVENT_ID',)
-    list_display = ["EVENT_ID", "COMP_NAME", "EVENT_DATE", "distance"]
+    ordering = ('-EVENT_DATE',)
+    list_display = ["COMP_NAME", "COMP_GROUP", "EVENT_DATE", "distance", "STATUS", "CATEGORY"]
+
+class FireHotspotAdmin(admin.ModelAdmin):
+    model = FIRE_HOTSPOT
+    ordering = ('-DATE',)
+    list_display = ["DATE", "TIME", "CONF", "SATELLITE", "SOURCE"]
 
 
 admin.site.register(PALMS_COMPANY_LIST, COMPAdmin)
 admin.site.register(FIRE_EVENTS_ALERT_LIST, FireEventsAdmin)
-admin.site.register(FIRE_HOTSPOT)
+admin.site.register(FIRE_HOTSPOT, FireHotspotAdmin)
 admin.site.register(DEFORESTATIONS_EVENTS_ALERT_LIST)

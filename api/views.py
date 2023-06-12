@@ -12,6 +12,7 @@ import ee
 import datetime
 from turfpy.measurement import area
 import json
+from gisbackend.settings import ENV_URL
 
 
 from rest_framework.parsers import JSONParser
@@ -27,9 +28,12 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 def ADD_HOTSPOT(request):
     if request.method == "POST":
         hotspot = JSONParser().parse(request)
-        UID = int(hotspot['id'])
+        UID = hotspot['id']
         CONF = int(hotspot['conf'])
         RADIUS = int(hotspot['radius'])
+        SOURCE = str(hotspot['source'])
+        LONG = round(float(hotspot['long']), 3)
+        LAT = round(float(hotspot['lat']), 3)
         DATE = str(hotspot['date'])
         TIME = str(hotspot['times'])
         SATELLITE = str(hotspot['sat']).upper()
@@ -38,8 +42,8 @@ def ADD_HOTSPOT(request):
         KECAMATAN = str(hotspot['kecamatan'])
         geometry = hotspot['geometry']
         geom = GEOSGeometry(json.dumps(geometry))
-        if not FIRE_HOTSPOT.objects.filter(UID=UID).exists():
-            FIRE_HOTSPOT.objects.create(UID=UID, CONF=CONF, DATE=DATE, TIME=TIME, RADIUS=RADIUS, SATELLITE=SATELLITE, PROVINSI=PROVINSI, KEBUPATEN=KEBUPATEN, KECAMATAN=KECAMATAN, geom=geom)
+        if not FIRE_HOTSPOT.objects.filter(DATE=DATE, LONG=LONG, LAT=LAT).exists():
+            FIRE_HOTSPOT.objects.create(UID=UID, CONF=CONF, DATE=DATE, TIME=TIME, RADIUS=RADIUS, SATELLITE=SATELLITE, PROVINSI=PROVINSI, KEBUPATEN=KEBUPATEN, KECAMATAN=KECAMATAN, SOURCE=SOURCE, LONG=LONG, LAT=LAT, geom=geom)
             return JsonResponse({"message": "Added Successfully" })
         else:
             return JsonResponse({"message": "Data Already Exist" })
@@ -86,17 +90,17 @@ def LIST_FIRE_EVENTS(request):
         else:
             events = FIRE_EVENTS_ALERT_LIST.objects.filter(STATUS=status)
         
-        data = serialize('geojson', events, fields=('COMP', 'COMP_NAME', 'EVENT_ID', 'EVENT_DATE', 'EVENT_TIME','EVENT_CAT', 'CONF', 'SATELLITE', 'RADIUS', "STATUS","CATEGORY", "distance"), geometry_field='geom')
+        data = serialize('geojson', events, fields=('COMP', 'COMP_NAME', 'EVENT_DATE', 'EVENT_TIME','EVENT_CAT', 'CONF', 'SATELLITE', 'RADIUS', "STATUS","CATEGORY", "distance"), geometry_field='geom')
         return HttpResponse(data, content_type='application/json')
     
     if request.method == "POST":
         data = JSONParser().parse(request)
-        if not FIRE_EVENTS_ALERT_LIST.objects.filter(EVENT_ID=data['EVENT_ID']).exists():
+        if not FIRE_EVENTS_ALERT_LIST.objects.filter(EVENT_DATE=data['EVENT_DATE'], LONG=data['LONG'], LAT=data['LAT']).exists():
             PT = PALMS_COMPANY_LIST.objects.get(pk=data['COMP'])
             COMP = PT
             COMP_NAME = data['COMP_NAME']
             COMP_GROUP = data['COMP_GROUP']
-            EVENT_ID = data['EVENT_ID']
+            #EVENT_ID = data['EVENT_ID']
             EVENT_DATE = data['EVENT_DATE']
             EVENT_TIME = data['EVENT_TIME']
             CONF = data['CONF']
@@ -107,12 +111,16 @@ def LIST_FIRE_EVENTS(request):
             PROVINSI = data['PROVINSI']
             distance = data['distance']
             CATEGORY = data['CATEGORY']
+            LONG = data['LONG']
+            LAT= data['LAT']
             geom = {
                 "type": "Point",
                 "coordinates": data['coordinates']}
             geom = GEOSGeometry(json.dumps(geom))
-            FIRE_EVENTS_ALERT_LIST.objects.create(COMP=COMP, COMP_NAME=COMP_NAME, COMP_GROUP=COMP_GROUP,EVENT_ID=EVENT_ID, EVENT_DATE=EVENT_DATE, EVENT_TIME=EVENT_TIME, SATELLITE=SATELLITE, RADIUS=RADIUS, CONF=CONF, KECAMATAN=KECAMATAN, KEBUPATEN=KEBUPATEN, PROVINSI=PROVINSI, distance=distance, geom=geom, CATEGORY=CATEGORY)
-        return JsonResponse({"message": "POST Successfully" })
+            FIRE_EVENTS_ALERT_LIST.objects.create(COMP=COMP, COMP_NAME=COMP_NAME, COMP_GROUP=COMP_GROUP, EVENT_DATE=EVENT_DATE, EVENT_TIME=EVENT_TIME, SATELLITE=SATELLITE, RADIUS=RADIUS, CONF=CONF, KECAMATAN=KECAMATAN, KEBUPATEN=KEBUPATEN, PROVINSI=PROVINSI, distance=distance, geom=geom, CATEGORY=CATEGORY, LONG=LONG, LAT=LAT)
+            return JsonResponse({"message": "Added Successfully" })
+        else:
+            return JsonResponse({"message": "Data Already Exist" })
 
 
 
@@ -124,16 +132,10 @@ class FireAlertAPIViewset(viewsets.ModelViewSet):
         permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
     
-
-def initEarthEngine():
-    service_account = 'earth-engine@geocircle-512f9.iam.gserviceaccount.com'
-    credentials = ee.ServiceAccountCredentials(service_account, './geocircle-512f9-6640610a0602.json')
-    ee.Initialize(credentials)
-    print("Initialized")
     
 def GET_DEFORESTATIONS(request):
-    initEarthEngine()
-
+    #print(ENV_URL)
+    subprocess.Popen(['python', './function/getDF.py', ' -env ' + '{}'.format(ENV_URL)])
     return JsonResponse({
         "message": "POST Successfully"
     })
