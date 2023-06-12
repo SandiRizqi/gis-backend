@@ -7,7 +7,14 @@ from sqlalchemy import text
 import datetime
 
 
-MODE = os.environ['ENVMODE']
+
+
+if os.path.exists('./.dev.env'):
+    MODE = "Development"
+else:
+    MODE = "Production"
+
+    
 today = datetime.date.today()
 host = 'http://127.0.0.1:9000/'
 
