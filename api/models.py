@@ -77,6 +77,7 @@ class FIRE_EVENTS_ALERT_LIST(models.Model):
     #EVENT_ID = models.CharField(max_length=250)
     EVENT_DATE = models.DateField(default=timezone.now)
     EVENT_TIME = models.TimeField()
+    UPDATE_TIME = models.DateTimeField(auto_now_add=True)
     CONF = models.IntegerField()
     SATELLITE = models.CharField(max_length=20)
     RADIUS = models.IntegerField()
