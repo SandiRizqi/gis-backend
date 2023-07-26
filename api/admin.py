@@ -18,7 +18,8 @@ class FireEventsAdmin(admin.ModelAdmin):
 class FireHotspotAdmin(admin.ModelAdmin):
     model = FIRE_HOTSPOT
     ordering = ('-DATE',)
-    list_display = ["DATE", "TIME", "CONF", "SATELLITE", "SOURCE"]
+    list_display = ["UPDATE_TIME","DATE", "TIME", "CONF", "SATELLITE", "SOURCE"]
+    list_filter = ["SOURCE", "DATE"]
     
 
 

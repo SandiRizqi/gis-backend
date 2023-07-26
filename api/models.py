@@ -52,6 +52,7 @@ class PALMS_COMPANY_LIST(models.Model):
 class FIRE_HOTSPOT(models.Model):
     UID = models.CharField(max_length=250)
     DATE = models.DateField(default=timezone.now)
+    UPDATE_TIME = models.DateTimeField(auto_now_add=True)
     TIME = models.TimeField()
     CONF = models.IntegerField()
     SATELLITE = models.CharField(max_length=20)
