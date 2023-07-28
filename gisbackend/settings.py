@@ -214,3 +214,10 @@ if os.path.exists('/opt/homebrew/opt/gdal/lib/libgdal.dylib'):
     GEOS_LIBRARY_PATH = '/opt/homebrew/opt/geos/lib/libgeos_c.dylib'
 else:
     pass
+
+
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000',
+    'https://web-gisdev1.tap-agri.com'
+    
+]
