@@ -8,8 +8,6 @@ from django.core.serializers import serialize
 from .models import FIRE_HOTSPOT, FIRE_EVENTS_ALERT_LIST, PALMS_COMPANY_LIST
 from .serializers import *
 import subprocess
-import ee
-import datetime
 from turfpy.measurement import area
 import json
 from gisbackend.settings import ENV_URL
@@ -22,7 +20,18 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 
 
-
+@csrf_exempt
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def LIST_COMPANY(request):
+    id = int(request.GET['comp'])
+    if not id :
+        COMP = PALMS_COMPANY_LIST.objects.all()
+    else:
+        COMP = PALMS_COMPANY_LIST.objects.filter(pk=int(id))
+    data = serialize('geojson', COMP, fields=('pk', 'COMP_NAME', 'COMP_GROUP'), geometry_field='geom')
+    return HttpResponse(data, content_type='application/json')
 
 @csrf_exempt
 def ADD_HOTSPOT(request):
