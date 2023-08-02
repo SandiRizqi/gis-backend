@@ -99,7 +99,7 @@ def LIST_FIRE_EVENTS(request):
         else:
             events = FIRE_EVENTS_ALERT_LIST.objects.filter(STATUS=status)
         
-        data = serialize('geojson', events, fields=('COMP', 'COMP_NAME', 'EVENT_DATE', 'EVENT_TIME','EVENT_CAT', 'CONF', 'SATELLITE', 'RADIUS', "STATUS","CATEGORY", "distance"), geometry_field='geom')
+        data = serialize('geojson', events, fields=('COMP', 'COMP_GROUP','COMP_NAME', 'EVENT_DATE', 'EVENT_TIME','EVENT_CAT', 'CONF', 'SATELLITE', 'RADIUS', "STATUS","CATEGORY", "distance"), geometry_field='geom')
         return HttpResponse(data, content_type='application/json')
     
     if request.method == "POST":
