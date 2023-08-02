@@ -218,6 +218,7 @@ else:
 
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
-    'https://web-gisdev1.tap-agri.com'
+    'https://web-gisdev1.tap-agri.com',
+    'http://web-gisdev1.tap-agri.com'
     
 ]
