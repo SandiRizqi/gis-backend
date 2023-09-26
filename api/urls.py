@@ -12,4 +12,5 @@ urlpatterns = [
     path('listcompany/', views.LIST_COMPANY),
     path('endpoints/', include(router.urls), name="endpoints" ),
     path('getdeforestations/', views.GET_DEFORESTATIONS),
+    path('adddeforestations/', views.ADD_DEFORESTATION_ALERT),
 ]

@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.serializers import serialize
-from .models import FIRE_HOTSPOT, FIRE_EVENTS_ALERT_LIST, PALMS_COMPANY_LIST
+from .models import FIRE_HOTSPOT, FIRE_EVENTS_ALERT_LIST, PALMS_COMPANY_LIST, DEFORESTATIONS_EVENTS_ALERT_LIST
 from .serializers import *
 import subprocess
 from turfpy.measurement import area
@@ -141,10 +141,29 @@ class FireAlertAPIViewset(viewsets.ModelViewSet):
         permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
     
-    
+@csrf_exempt   
 def GET_DEFORESTATIONS(request):
     #print(ENV_URL)
     subprocess.Popen(['python', './function/getDF.py', ' -env ' + '{}'.format(ENV_URL)])
     return JsonResponse({
         "message": "POST Successfully"
     })
+
+
+@csrf_exempt
+def ADD_DEFORESTATION_ALERT(request):
+    if request.method == "POST":
+        df = JSONParser().parse(request)
+        comp_id = df['id']
+        COMP = PALMS_COMPANY_LIST.objects.get(id=int(comp_id))
+        EVENT_ID=df['event_id']
+        AREA=df['area']
+        ALERT_DATE=df['alert_date']
+        geometry = df['geometry']
+        geom = GEOSGeometry(json.dumps(geometry))
+        if not DEFORESTATIONS_EVENTS_ALERT_LIST.objects.filter(EVENT_ID=EVENT_ID).exists():
+            DEFORESTATIONS_EVENTS_ALERT_LIST.objects.create(COMP=COMP, EVENT_ID=EVENT_ID, AREA=AREA, ALERT_DATE=ALERT_DATE, geom=geom)
+            return JsonResponse({"message": "Added Successfully" })
+        else:
+            DEFORESTATIONS_EVENTS_ALERT_LIST.objects.update_or_create(COMP=COMP, EVENT_ID=EVENT_ID, AREA=AREA, ALERT_DATE=ALERT_DATE, geom=geom)
+            return JsonResponse({"message": "Data already Exist Updated" })
