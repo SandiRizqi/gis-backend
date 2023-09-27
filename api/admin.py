@@ -33,4 +33,4 @@ class DFEventsAdmin(admin.ModelAdmin):
 admin.site.register(PALMS_COMPANY_LIST, COMPAdmin)
 admin.site.register(FIRE_EVENTS_ALERT_LIST, FireEventsAdmin)
 admin.site.register(FIRE_HOTSPOT, FireHotspotAdmin)
-admin.site.register(DEFORESTATIONS_EVENTS_ALERT_LIST)
+admin.site.register(DEFORESTATIONS_EVENTS_ALERT_LIST, DFEventsAdmin)
