@@ -20,6 +20,13 @@ class FireHotspotAdmin(admin.ModelAdmin):
     ordering = ('-DATE',)
     list_display = ["UPDATE_TIME","DATE", "TIME", "CONF", "SATELLITE", "SOURCE"]
     list_filter = ["SOURCE", "DATE"]
+
+class DFEventsAdmin(admin.ModelAdmin):
+    model = DEFORESTATIONS_EVENTS_ALERT_LIST
+    ordering = ('-ALERT_DATE',)
+    list_display = ["COMP", "EVENT_ID", "ALERT_DATE", "CREATED", "UPDATED"]
+    list_filter = ["COMP" ]
+    search_fields = ("COMP")
     
 
 
