@@ -165,5 +165,8 @@ def ADD_DEFORESTATION_ALERT(request):
             DEFORESTATIONS_EVENTS_ALERT_LIST.objects.create(COMP=COMP, EVENT_ID=EVENT_ID, AREA=AREA, ALERT_DATE=ALERT_DATE, geom=geom)
             return JsonResponse({"message": "Added Successfully" })
         else:
-            DEFORESTATIONS_EVENTS_ALERT_LIST.objects.update_or_create(COMP=COMP, EVENT_ID=EVENT_ID, AREA=AREA, ALERT_DATE=ALERT_DATE, geom=geom)
+            Event = DEFORESTATIONS_EVENTS_ALERT_LIST.objects.get(COMP=COMP, EVENT_ID=EVENT_ID)
+            Event.AREA = AREA
+            Event.geom = geom
+            Event.save()
             return JsonResponse({"message": "Data already Exist Updated" })
