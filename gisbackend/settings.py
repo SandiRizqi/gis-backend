@@ -39,6 +39,7 @@ SECRET_KEY = 'django-insecure-=-u@!p@dk3#nj)gra9m%sgs2+1=uo6v_8)dq+z=zvia3eipqsh
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+USEDOCKER=False
 
 
 
@@ -65,6 +66,8 @@ INSTALLED_APPS = [
 
     'corsheaders',
     'leaflet',
+    'django_celery_beat',
+    'django_celery_results',
 
 
 
@@ -109,30 +112,6 @@ WSGI_APPLICATION = 'gisbackend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-"""
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-"""
-'''
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'db_gis',
-        'USER': 'tap_gis',
-        'PASSWORD': 'T4pGreenGis88',
-        'HOST': 'postgresgis.tap-agri.com',
-        'PORT': '5432',
-        'CONN_MAX_AGE': 500
-    }
-}
-
-'''
 
 DATABASES = {
         'default': {
@@ -144,6 +123,23 @@ DATABASES = {
             'PORT': env.get('DB_PORT'),
             'CONN_MAX_AGE': 500
         }
+}
+
+
+# REDIS CACHE
+if USEDOCKER:
+    REDIS_URL = f"redis://redis:6379/0"
+else:
+    REDIS_URL = f"redis://127.0.0.1:6379/0"
+    
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_URL,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    }
 }
 
 
@@ -216,6 +212,8 @@ else:
     pass
 
 
+GDAL_LIBRARY_PATH = r'C:/Users/anugrah.sandi.TAP/AppData/Local/Programs/Python/Python310/Lib/site-packages/osgeo/gdal304.dll'
+
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
     'https://web-gisdev1.tap-agri.com',
@@ -224,3 +222,12 @@ CORS_ORIGIN_WHITELIST = [
     'https://web-gis.tap-agri.com'
     
 ]
+
+#CELERY
+CELERY_BROKER_URL = REDIS_URL
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_TIMEZONE = 'Asia/Jakarta'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'

@@ -1,6 +1,5 @@
 from django.shortcuts import render
 import json
-import requests
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
 from django.contrib.gis.geos import GEOSGeometry
@@ -11,7 +10,7 @@ import subprocess
 from turfpy.measurement import area
 import json
 from gisbackend.settings import ENV_URL
-
+from .tasks import update_deforestations
 
 from rest_framework.parsers import JSONParser
 from rest_framework import viewsets
@@ -170,3 +169,11 @@ def ADD_DEFORESTATION_ALERT(request):
             Event.geom = geom
             Event.save()
             return JsonResponse({"message": "Data already Exist Updated" })
+        
+        
+@csrf_exempt        
+def updatedeforestation(request):
+    update_deforestations.delay()
+    return JsonResponse ({
+        "message": "Task Done",
+        "version": "V1.5" })
