@@ -150,6 +150,9 @@ def GET_DEFORESTATIONS(request):
 
 
 @csrf_exempt
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def ADD_DEFORESTATION_ALERT(request):
     if request.method == "POST":
         df = JSONParser().parse(request)

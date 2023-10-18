@@ -105,7 +105,7 @@ class DEFORESTATIONS_EVENTS_ALERT_LIST(models.Model):
     ALERT_DATE = models.DateTimeField(default=timezone.now)
     CREATED = models.DateTimeField(default=timezone.now)
     UPDATED = models.DateTimeField(auto_now=True)
-    AREA = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
+    AREA = models.DecimalField(max_digits=15, decimal_places=4, blank=True, null=True)
     READ_BY = ArrayField(models.CharField(max_length=250, null=True, blank=True), default=list, blank=True, null=True)
     geom = models.MultiPolygonField(srid=4326, geography=True, null=True, blank=True, editable=True)
 
