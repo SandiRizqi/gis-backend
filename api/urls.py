@@ -13,5 +13,6 @@ urlpatterns = [
     path('endpoints/', include(router.urls), name="endpoints" ),
     path('getdeforestations/', views.GET_DEFORESTATIONS),
     path('updatedeforestations/', views.updatedeforestation),
+    path('updatehotspots/', views.updatehotspot),
     path('adddeforestations/', views.ADD_DEFORESTATION_ALERT),
 ]

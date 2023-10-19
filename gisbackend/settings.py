@@ -16,7 +16,7 @@ import mimetypes
 from decouple import Config, RepositoryEnv
 
 
-if os.path.exists('./.dev.env'):
+if os.path.exists('.dev.env'):
     ENV_URL = '.dev.env'
 else:
     ENV_URL = '.env'
@@ -38,12 +38,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-=-u@!p@dk3#nj)gra9m%sgs2+1=uo6v_8)dq+z=zvia3eipqsh'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-<<<<<<< HEAD
 DEBUG = True
-USEDOCKER=False
-=======
-DEBUG = False
->>>>>>> a9137922af2ad34ac525019ba6b8e3c2f0dd7c8a
+USEDOCKER=os.environ.get('USEDOCKER')
 
 
 
@@ -131,10 +127,7 @@ DATABASES = {
 
 
 # REDIS CACHE
-if USEDOCKER:
-    REDIS_URL = f"redis://redis:6379/0"
-else:
-    REDIS_URL = f"redis://127.0.0.1:6379/0"
+REDIS_URL = f"redis://{env.get('REDIS_URL')}:6379/0"
     
 CACHES = {
     "default": {
@@ -216,7 +209,8 @@ else:
     pass
 
 
-GDAL_LIBRARY_PATH = r'C:/Users/anugrah.sandi.TAP/AppData/Local/Programs/Python/Python310/Lib/site-packages/osgeo/gdal304.dll'
+if not USEDOCKER:
+    GDAL_LIBRARY_PATH = r'C:/Users/anugrah.sandi.TAP/AppData/Local/Programs/Python/Python310/Lib/site-packages/osgeo/gdal304.dll'
 
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
@@ -234,4 +228,5 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_TIMEZONE = 'Asia/Jakarta'
+CELERY_RESULT_EXTENDED = True
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'

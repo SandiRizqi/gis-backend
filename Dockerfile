@@ -5,6 +5,7 @@ EXPOSE 9000
 
 # Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE=1
+ENV USEDOCKER=1
 
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1

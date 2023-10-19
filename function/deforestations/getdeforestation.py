@@ -1,0 +1,152 @@
+import rasterio
+from rasterio.features import shapes
+import numpy as np
+from sqlalchemy import create_engine
+import geopandas as gpd
+import requests
+import rasterio.mask
+from datetime import timedelta, date
+import requests
+import json
+import threading
+
+
+
+
+def getjson(path):
+    with open(path) as f:
+        d = json.load(f)
+    return d
+
+
+
+def getdate(number):
+    #conf = int(str(number)[0])
+    day = int(str(number)[1:])
+    start_data = date(2014,12,31)
+    end_date = start_data+ timedelta(days=day)
+    return str(end_date)
+
+def getconf(number):
+    conf = int(str(number)[0])
+    return conf
+
+def get_tiles(db_connection_url):
+    dbengine = create_engine(db_connection_url)
+    sql = "SELECT * FROM api_palms_company_list"
+    estate = gpd.read_postgis(sql, con=dbengine).to_crs('epsg:4326')
+    estate['CREATED'] = estate['CREATED'].astype(str)
+    estate['UPDATED'] = estate['UPDATED'].astype(str)
+    zone = gpd.read_file('./vectors/zones/Integrated_deforestation_alerts.shp').to_crs('epsg:4326')
+    estate = estate.overlay(zone, how='intersection')
+    tiles_id = estate['tile_id'].unique()
+    for tile in tiles_id:
+        read_img(tile)
+    estate = json.loads(estate.to_json())
+    threads = []
+    for ft in estate['features']:
+        #get_data(ft, ft['properties']['tile_id'], ft['properties']['COMP_NAME'])
+        thread = threading.Thread(target=get_data, args=(ft, ft['properties']['tile_id'], ft['properties']['COMP_NAME'], ft['properties']['id']))
+        thread.start()
+        threads.append(thread)
+    for thread in threads:
+        thread.join()
+    return True
+
+
+def rasterio_clip(feature, tile_id, name):
+    shapes = [feature["geometry"]]
+
+    for i, shape in enumerate(shapes):
+        with rasterio.Env():
+            with rasterio.open("./tiles/{}.tif".format(tile_id)) as src:
+                out_image, out_transform = rasterio.mask.mask(src, [shape], crop=True)
+                out_meta = src.meta
+
+            out_meta.update({"driver": "GTiff",
+                        "height": out_image.shape[1],
+                        "width": out_image.shape[2],
+                        "transform": out_transform})
+
+            with rasterio.open("./temp/temp-{}.tif".format(name), "w", **out_meta) as dest:
+                dest.write(out_image)
+
+def read_img(tile_id):
+    url = "https://data-api.globalforestwatch.org/dataset/gfw_integrated_alerts/latest/download/geotiff?grid=10/100000&tile_id={}&pixel_meaning=date_conf&x-api-key=2d60cd88-8348-4c0f-a6d5-bd9adb585a8c".format(tile_id)
+    response = requests.get(url)
+    open("./tiles/{}.tif".format(tile_id), "wb").write(response.content)
+
+def get_vector(name, id):
+     with rasterio.Env():
+        with rasterio.open("./temp/temp-{}.tif".format(id), 'r') as src:
+            mask = 0
+            arr = src.read(1)
+            is_valid = (arr != mask).astype(np.uint8)
+            #results = ({'properties': {'value': int(v),'comp_name': name, 'comp_id': id}, 'geometry': s}for i, (s, v) in enumerate(shapes(arr, mask=is_valid, connectivity=4, transform=src.transform)))
+            geoms = []
+            for _, (s, v) in enumerate(shapes(arr, mask=is_valid, connectivity=4, transform=src.transform)):
+                
+                if s['type'] == "Polygon":
+                    coord = [s['coordinates']]
+                else:
+                    coord = s['coordinates']
+
+                row = {'properties': {'value': int(v),
+                                      'comp_name': name,
+                                      'comp_id': id},
+                        'geometry': {
+                                    'type': 'MultiPolygon',
+                                    'coordinates': coord
+                                      }}
+                geoms.append(row)
+            #geoms = list(results)
+            gdb = gpd.GeoDataFrame.from_features(geoms).set_crs('epsg:4326')
+            gdb['dates'] = gdb.apply(lambda row: getdate(int(row.value)), axis=1)
+            gdb['conf'] = gdb.apply(lambda row: getconf(int(row.value)), axis=1)
+            gdb = gdb.dissolve(by=['dates', 'comp_name', 'comp_id'])
+            gdb = gdb.sort_values(by=['dates'])
+            gdb = gdb.to_crs({'init': 'epsg:3857'})
+            gdb['hectares'] = gdb['geometry'].area/10**4
+            gdb = gdb.to_crs('epsg:4326')
+            gdb.to_file("./vectors/alerts/{}.geojson".format(id), driver="GeoJSON")
+
+        
+def get_data(shapefile_pt, tile_id, name, id):
+    try:
+        #read_img(tile_id)
+        print("Processing, ", name)
+        rasterio_clip(shapefile_pt, tile_id, id)
+        get_vector(name, id)
+    except Exception as er:
+        print(er)
+   
+
+
+def postData(host, token, url, name):
+    print("Post data", name)
+    geojson =  getjson(url)
+    for data in geojson['features']:
+        if data['geometry']['type'] == "Polygon":
+            geom = {
+            "type": "MultiPolygon",
+            "coordinates": [data['geometry']['coordinates']]
+            }
+        else:
+            geom = {
+            "type": "MultiPolygon",
+            "coordinates": data['geometry']['coordinates']
+            }
+        post = {
+            "id": data['properties']['comp_id'],
+            "event_id": "{}/{}/{}".format(data['properties']['comp_id'], data['properties']['dates'], data['properties']['conf']),
+            "alert_date":data['properties']['dates'],
+            "area": float(data['properties']['hectares']),
+            "geometry": geom
+
+        }
+        header = {
+            "Content-Type" : "application/json",
+            "Authorization": f"Token {token}"
+        }
+        ress = requests.post(f'{host}/api/adddeforestations/', json=json.loads(json.dumps(post)), headers=header)
+        print(ress.status_code)

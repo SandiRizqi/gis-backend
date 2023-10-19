@@ -10,7 +10,7 @@ import subprocess
 from turfpy.measurement import area
 import json
 from gisbackend.settings import ENV_URL
-from .tasks import update_deforestations
+from .tasks import update_deforestations, update_hotspots
 
 from rest_framework.parsers import JSONParser
 from rest_framework import viewsets
@@ -177,6 +177,14 @@ def ADD_DEFORESTATION_ALERT(request):
 @csrf_exempt        
 def updatedeforestation(request):
     update_deforestations.delay()
+    return JsonResponse ({
+        "message": "Task Done",
+        "version": "V1.5" })
+
+
+@csrf_exempt        
+def updatehotspot(request):
+    update_hotspots()
     return JsonResponse ({
         "message": "Task Done",
         "version": "V1.5" })
