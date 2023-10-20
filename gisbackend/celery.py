@@ -13,7 +13,7 @@ app.config_from_object(settings, namespace='CELERY')
 app.conf.beat_schedule = {
     'update-deforestations-alert' : {
         'task': 'api.tasks.update_deforestations',
-        'schedule' : crontab(minute=1)
+        'schedule' : crontab(hour=1)
     },
     'update-hotspots-alert' : {
         'task': 'api.tasks.update_hotspots',

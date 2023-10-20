@@ -3,6 +3,7 @@ version: '3.8'
 services:
   gisbackend:
     container_name: gisbackend
+    image: gis-backend-gisbackend
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -14,12 +15,19 @@ services:
 
   celery:
     container_name: giscelery
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    command: celery -A gisbackend.celery worker -l info -B
+    image: gis-backend-gisbackend
+    command: celery -A gisbackend.celery worker -l info -B --concurrency=5 
+    pull_policy: never
     depends_on:
       - gisbackend
+    networks:
+      - live
+
+  gis-redis:
+    container_name: gis-redis
+    image: redis:alpine
+    hostname: redis
+    restart : on-failure
     networks:
       - live
 
