@@ -15,7 +15,9 @@ services:
 
   celery:
     container_name: giscelery
-    image: gis-backend-gisbackend
+    build:
+      context: .
+      dockerfile: ./Dockerfile
     command: celery -A gisbackend.celery worker -l info -B --concurrency=5 
     pull_policy: never
     depends_on:
@@ -23,13 +25,6 @@ services:
     networks:
       - live
 
-  gis-redis:
-    container_name: gis-redis
-    image: redis:alpine
-    hostname: redis
-    restart : on-failure
-    networks:
-      - live
 
 networks:
   live:
