@@ -16,7 +16,7 @@ app.conf.beat_schedule = {
         'schedule' : crontab(minute=0, hour=0)
     },
     'add-hotspot' : {
-        'task': 'api.tasks.add_hotspots',
+        'task': 'api.tasks.add_hotspot',
         'schedule' : crontab(minute='*/10')
     },
     'update-hotspots-alert' : {
