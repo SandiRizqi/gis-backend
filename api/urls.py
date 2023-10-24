@@ -5,8 +5,6 @@ from .router import router
 
 urlpatterns = [
     path('addhotspot/', views.ADD_HOTSPOT),
-    path('gethotspot/', views.GET_HOTSPOT),
-    path('gethotspotalert/', views.GET_HOTSPOT_ALERT),
     path('hotspot/', views.LIST_HOTSPOT),
     path('events/fires/company/', views.LIST_FIRE_EVENTS),
     path('listcompany/', views.LIST_COMPANY),

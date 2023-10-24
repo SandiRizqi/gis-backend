@@ -56,22 +56,7 @@ def ADD_HOTSPOT(request):
         else:
             return JsonResponse({"message": "Data Already Exist" })
 
-@csrf_exempt
-def GET_HOTSPOT(request):
-    if request.method == "GET":
-        subprocess.Popen(['python', './function/getHotspot.py'])
-        return JsonResponse({
-            "message": "Function is running in the background"
-        })
-    
-@csrf_exempt
-def GET_HOTSPOT_ALERT(request):
-    if request.method == "GET":
-        subprocess.Popen(['python', './function/getHotspotAlert.py'])
-        return JsonResponse({
-            "message": "Function is running in the background"
-        })
-    
+
 
 @csrf_exempt
 def LIST_HOTSPOT(request):
@@ -84,6 +69,7 @@ def LIST_HOTSPOT(request):
         HOTSPOTS = FIRE_HOTSPOT.objects.filter(DATE__range=[startdate, enddate])
     data = serialize('geojson', HOTSPOTS, fields=('UID', 'DATE', 'TIME', 'CONF', 'RADIUS', 'KECAMATAN', 'KEBUPATEN', 'PROVINSI', 'SATELLITE'), geometry_field='geom')
     return HttpResponse(data, content_type='application/json')
+
 
 @csrf_exempt
 @api_view(['GET', 'POST'])
