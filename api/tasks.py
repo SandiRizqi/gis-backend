@@ -8,7 +8,7 @@ from gisbackend.settings import env
 from function.hotspots.update import getNear
 from function.hotspots.utils import inactive_hotspot
 from function.deforestations.getdeforestation import *
-import datetime
+from datetime import datetime, timedelta, date
 
 
 @shared_task(bind=True)
@@ -113,7 +113,7 @@ def update_hotspots(self):
     token = env.get('TOKEN')
     #print(token)
 
-    today = datetime.date.today()
+    today = date.today()
     
     
     con = create_engine(db_connection_url)
@@ -131,7 +131,7 @@ def update_hotspots(self):
 
 @shared_task(bind=True)
 def deactivate_hotspots(self):
-    date = str(datetime.date.today())
+    date = str(date.today())
     query = "UPDATE {} SET {} = {} WHERE \"EVENT_DATE\" <> '{}'::DATE".format('"api_fire_events_alert_list"', '"STATUS"' , "'INACTIVE'", date)
     dbhost = env.get('DB_HOST')
     database = env.get('DB_NAME')
