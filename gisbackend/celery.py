@@ -15,7 +15,7 @@ app.conf.beat_schedule = {
         'task': 'api.tasks.update_deforestations',
         'schedule' : crontab(day_of_week=1)
     },
-    'add-hotspots' : {
+    'add-hotspot' : {
         'task': 'api.tasks.add_hotspots',
         'schedule' : crontab(minute='*/10')
     },
