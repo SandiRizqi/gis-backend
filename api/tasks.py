@@ -21,6 +21,7 @@ def add_hotspot(self):
     post_url = f"{webhost}/api/addhotspot/"
     data = requests.get('https://hotspot.brin.go.id/getHS?$$hashKey=object:32&class=hotspot&conf_lvl=low&enddate=&id=0&loc={"stt":"Indonesia","disp":"Indonesia"}&mode=cluster&name=Hotspot&startdate=&time=last24h&visibility=true', headers=headers)
     data = data.json()
+    
     if len(data['features']) > 0:
         for feature in data['features']:
             detail = requests.get('https://hotspot.brin.go.id/getHSdetail?hsid={}&mode=cluster'.format(feature['id']), headers=headers)
@@ -36,7 +37,8 @@ def add_hotspot(self):
             detail['date'] = str(detail['time']).split()[0]
             detail['times'] = str(detail['time']).split()[1]
             respnse = requests.post(post_url, json=detail, headers=headers)
-            print("LAPAN :", respnse.json())
+            print("LAPAN :", respnse.status_code)
+
     siponi_url = 'https://sipongi.menlhk.go.id/api/opsroom/indoHotspot?wilayah=IN&filterperiode=false&late=24&satelit[]=NASA-MODIS&satelit[]=NASA-SNPP&satelit[]=NASA-NOAA20&confidence[]=high&confidence[]=medium&confidence[]=low'
     data = requests.get(siponi_url)
     data = data.json()
@@ -70,7 +72,7 @@ def add_hotspot(self):
 
             respnse = requests.post(post_url, json=detail, headers=headers)
             #print(detail)
-            print("Sipongi :", respnse.json())
+            print("Sipongi :", respnse.status_code)
 
     return "Add Hotspot Data Done"
 
