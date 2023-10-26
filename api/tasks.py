@@ -134,7 +134,7 @@ def update_hotspots(self):
 @shared_task(bind=True)
 def deactivate_hotspots(self):
     today = str(date.today())
-    query = "UPDATE {} SET {} = {} WHERE \"EVENT_DATE\" <> '{}'::DATE".format('"api_fire_events_alert_list"', '"STATUS"' , "'INACTIVE'", today)
+    query = "UPDATE {} SET {} = {} WHERE \"STATUS\" = {}".format('"api_fire_events_alert_list"', '"STATUS"' , "'INACTIVE'", "'ACTIVE'")
     dbhost = env.get('DB_HOST')
     database = env.get('DB_NAME')
     user = env.get('DB_USER')
