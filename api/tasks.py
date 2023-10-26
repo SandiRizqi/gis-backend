@@ -21,7 +21,7 @@ def add_hotspot(self):
     post_url = f"{webhost}/api/addhotspot/"
     data = requests.get('https://hotspot.brin.go.id/getHS?$$hashKey=object:32&class=hotspot&conf_lvl=low&enddate=&id=0&loc={"stt":"Indonesia","disp":"Indonesia"}&mode=cluster&name=Hotspot&startdate=&time=last24h&visibility=true', headers=headers)
     data = data.json()
-    
+
     if len(data['features']) > 0:
         for feature in data['features']:
             detail = requests.get('https://hotspot.brin.go.id/getHSdetail?hsid={}&mode=cluster'.format(feature['id']), headers=headers)
@@ -133,8 +133,8 @@ def update_hotspots(self):
 
 @shared_task(bind=True)
 def deactivate_hotspots(self):
-    date = str(date.today())
-    query = "UPDATE {} SET {} = {} WHERE \"EVENT_DATE\" <> '{}'::DATE".format('"api_fire_events_alert_list"', '"STATUS"' , "'INACTIVE'", date)
+    today = str(date.today())
+    query = "UPDATE {} SET {} = {} WHERE \"EVENT_DATE\" <> '{}'::DATE".format('"api_fire_events_alert_list"', '"STATUS"' , "'INACTIVE'", today)
     dbhost = env.get('DB_HOST')
     database = env.get('DB_NAME')
     user = env.get('DB_USER')
