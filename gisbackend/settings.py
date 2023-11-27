@@ -39,7 +39,10 @@ SECRET_KEY = 'django-insecure-=-u@!p@dk3#nj)gra9m%sgs2+1=uo6v_8)dq+z=zvia3eipqsh
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+<<<<<<< HEAD
 USEDOCKER=os.environ.get('USEDOCKER')
+=======
+>>>>>>> 69d4217 (update)
 
 
 
@@ -66,7 +69,10 @@ INSTALLED_APPS = [
 
     'corsheaders',
     'leaflet',
+<<<<<<< HEAD
     'django_celery_beat',
+=======
+>>>>>>> 69d4217 (update)
     'django_celery_results',
 
 
@@ -221,6 +227,7 @@ CORS_ORIGIN_WHITELIST = [
     
 ]
 
+<<<<<<< HEAD
 #CELERY
 CELERY_BROKER_URL = REDIS_URL
 CELERY_ACCEPT_CONTENT = ['application/json']
@@ -230,3 +237,22 @@ CELERY_RESULT_BACKEND = 'django-db'
 CELERY_TIMEZONE = 'Asia/Jakarta'
 CELERY_RESULT_EXTENDED = True
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+=======
+
+#CELERY SETTING
+# My config
+USE_DOCKER = True
+
+# CELERY
+if USE_DOCKER:
+    CELERY_BROKER_URL = 'redis://redis:6379'  # Docker
+else:
+    CELERY_BROKER_URL = 'redis://localhost:6379'  # Local
+
+CETERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Jakarta'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_EXTENDED = True
+>>>>>>> 69d4217 (update)

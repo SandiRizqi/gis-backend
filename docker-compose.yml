@@ -2,29 +2,9 @@ version: '3.8'
 
 services:
   gisbackend:
-    container_name: gisbackend
-    image: gis-backend-gisbackend
+    image: gisbackend
     build:
       context: .
       dockerfile: ./Dockerfile
-    command: gunicorn gisbackend.wsgi:application -b 0.0.0.0:9000
     ports:
-      - 9000:9000
-    networks:
-      - live
-
-  celery:
-    container_name: giscelery
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    command: celery -A gisbackend.celery worker -l info -B --concurrency=5 
-    pull_policy: never
-    depends_on:
-      - gisbackend
-    networks:
-      - live
-
-
-networks:
-  live:
+      - 8000:8000

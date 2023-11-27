@@ -21,6 +21,7 @@ from .views import *
 
 urlpatterns = [
     path('', TestURL),
+    path('task/', Task),
     path('api/', include('api.urls')),
     path('admin/', admin.site.urls),
     
