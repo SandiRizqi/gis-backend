@@ -97,6 +97,9 @@ def update_deforestations(self):
             threads.append(thread)
         for thread in threads:
             thread.join()
+        files = glob.glob('./vectors/alerts/*')
+        for items in files:
+            os.remove(items)
         return "Update Deforestation Data Done"
     else:
         return "Failed to Update Deforestation Data"
