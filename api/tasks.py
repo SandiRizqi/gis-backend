@@ -90,13 +90,8 @@ def update_deforestations(self):
     tiles = get_tiles(db_connection_url)
     if tiles:
         files = [os.path.basename(x) for x in glob('./vectors/alerts/*.geojson')]
-        threads = []
         for file in files:
-            thread = threading.Thread(target=postData, args=(webhost, token, './vectors/alerts/' + file, file))
-            thread.start()
-            threads.append(thread)
-        for thread in threads:
-            thread.join()
+            postData(webhost, token, './vectors/alerts/' + file, file)
         files = glob('./vectors/alerts/*')
         for items in files:
             os.remove(items)
