@@ -186,7 +186,7 @@ def UpdateDatabase(url, name):
         ALERT_DATE=df['alert_date']
         geometry = df['geometry']
         geom = GEOSGeometry(json.dumps(geometry))
-        if not DEFORESTATIONS_EVENTS_ALERT_LIST.objects.filter(EVENT_ID=EVENT_ID).exists():
+        if not DEFORESTATIONS_EVENTS_ALERT_LIST.objects.filter(EVENT_ID=EVENT_ID, COMP=COMP).exists():
             DEFORESTATIONS_EVENTS_ALERT_LIST.objects.create(COMP=COMP, EVENT_ID=EVENT_ID, AREA=AREA, ALERT_DATE=ALERT_DATE, geom=geom)
             return JsonResponse({"message": "Added Successfully" })
         else:
