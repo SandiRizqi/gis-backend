@@ -91,7 +91,8 @@ def update_deforestations(self):
     if tiles:
         files = [os.path.basename(x) for x in glob('./vectors/alerts/*.geojson')]
         for file in files:
-            postData(webhost, token, './vectors/alerts/' + file, file)
+            UpdateDatabase('./vectors/alerts/' + file, file)
+            #postData(webhost, token, './vectors/alerts/' + file, file)
         files = glob('./vectors/alerts/*')
         for items in files:
             os.remove(items)
