@@ -9,7 +9,7 @@ def TestURL(request):
     else:
         MODE = "Development"
 
-    update_deforestations()
+    #update_deforestations()
 
     return JsonResponse ({
         "mode": MODE,

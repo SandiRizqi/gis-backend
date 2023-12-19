@@ -77,8 +77,8 @@ def add_hotspot(self):
     return "Add Hotspot Data Done"
 
 
-#@shared_task(bind=True)
-def update_deforestations():
+@shared_task(bind=True)
+def update_deforestations(self):
     dbhost = env.get('DB_HOST')
     database = env.get('DB_NAME')
     user = env.get('DB_USER')
