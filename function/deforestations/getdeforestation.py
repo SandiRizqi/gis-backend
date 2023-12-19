@@ -9,7 +9,7 @@ from datetime import timedelta, date
 import requests
 import json
 import threading
-import JSONParser
+from rest_framework.parsers import JSONParser
 from api.models import DEFORESTATIONS_EVENTS_ALERT_LIST, PALMS_COMPANY_LIST
 from django.http import JsonResponse, HttpResponse
 from django.contrib.gis.geos import GEOSGeometry
@@ -18,7 +18,7 @@ from django.contrib.gis.geos import GEOSGeometry
 
 def getjson(path):
     with open(path) as f:
-        d = json.load(f)
+        d = json.loads(json.dumps(f))
     return d
 
 
@@ -111,7 +111,7 @@ def get_vector(name, id):
             gdb = gdb.to_crs({'init': 'epsg:3857'})
             gdb['hectares'] = gdb['geometry'].area/10**4
             gdb = gdb.to_crs('epsg:4326')
-            gdb.to_file("./vectors/alerts/{}.geojson".format(id), driver="GeoJSON")
+            gdb.to_file("./vectors/alerts/{}.json".format(id), driver="GeoJSON")
 
         
 def get_data(shapefile_pt, tile_id, name, id):

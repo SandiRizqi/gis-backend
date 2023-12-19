@@ -77,15 +77,15 @@ def add_hotspot(self):
     return "Add Hotspot Data Done"
 
 
-@shared_task(bind=True)
-def update_deforestations(self):
+#@shared_task(bind=True)
+def update_deforestations():
     dbhost = env.get('DB_HOST')
     database = env.get('DB_NAME')
     user = env.get('DB_USER')
     password = env.get('DB_PASSWORD')
     port = env.get('DB_PORT')
-    webhost = env.get('WEB_HOST')
-    token = env.get('TOKEN')
+    #webhost = env.get('WEB_HOST')
+    #token = env.get('TOKEN')
     db_connection_url = f"postgresql://{user}:{password}@{dbhost}:{str(port)}/{database}"
     tiles = get_tiles(db_connection_url)
     if tiles:

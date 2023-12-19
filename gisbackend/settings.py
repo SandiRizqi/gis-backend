@@ -211,6 +211,7 @@ else:
 
 if not USEDOCKER:
     GDAL_LIBRARY_PATH = r'C:/Users/anugrah.sandi.TAP/AppData/Local/Programs/Python/Python310/Lib/site-packages/osgeo/gdal304.dll'
+    REDIS_URL = 'redis://127.0.0.1:6379/0'
 
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',

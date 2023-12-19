@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from .settings import ENV_URL
+from api.tasks import update_deforestations
 
 
 def TestURL(request):
@@ -7,6 +8,8 @@ def TestURL(request):
         MODE = "Production"
     else:
         MODE = "Development"
+
+    update_deforestations()
 
     return JsonResponse ({
         "mode": MODE,
