@@ -1,5 +1,6 @@
 from django.http import JsonResponse, HttpResponse
 from .settings import ENV_URL
+from api.tasks import update_deforestations
 from api.task import test_func
 
 def TestURL(request):
@@ -8,11 +9,12 @@ def TestURL(request):
     else:
         MODE = "Development"
 
+    #update_deforestations()
+
     return JsonResponse ({
         "mode": MODE,
         "env": ENV_URL,
         "message": "Service is online",
-<<<<<<< HEAD
         "version": "V1.7" })
 
 =======

@@ -84,19 +84,18 @@ def update_deforestations(self):
     user = env.get('DB_USER')
     password = env.get('DB_PASSWORD')
     port = env.get('DB_PORT')
-    webhost = env.get('WEB_HOST')
-    token = env.get('TOKEN')
+    #webhost = env.get('WEB_HOST')
+    #token = env.get('TOKEN')
     db_connection_url = f"postgresql://{user}:{password}@{dbhost}:{str(port)}/{database}"
     tiles = get_tiles(db_connection_url)
     if tiles:
         files = [os.path.basename(x) for x in glob('./vectors/alerts/*.geojson')]
-        threads = []
         for file in files:
-            thread = threading.Thread(target=postData, args=(webhost, token, './vectors/alerts/' + file, file))
-            thread.start()
-            threads.append(thread)
-        for thread in threads:
-            thread.join()
+            UpdateDatabase('./vectors/alerts/' + file, file)
+            #postData(webhost, token, './vectors/alerts/' + file, file)
+        files = glob('./vectors/alerts/*')
+        for items in files:
+            os.remove(items)
         return "Update Deforestation Data Done"
     else:
         return "Failed to Update Deforestation Data"

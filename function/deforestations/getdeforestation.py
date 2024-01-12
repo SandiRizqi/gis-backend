@@ -9,13 +9,16 @@ from datetime import timedelta, date
 import requests
 import json
 import threading
-
+from rest_framework.parsers import JSONParser
+from api.models import DEFORESTATIONS_EVENTS_ALERT_LIST, PALMS_COMPANY_LIST
+from django.http import JsonResponse, HttpResponse
+from django.contrib.gis.geos import GEOSGeometry
 
 
 
 def getjson(path):
     with open(path) as f:
-        d = json.load(f)
+        d = json.loads(json.dumps(f))
     return d
 
 
@@ -108,7 +111,7 @@ def get_vector(name, id):
             gdb = gdb.to_crs({'init': 'epsg:3857'})
             gdb['hectares'] = gdb['geometry'].area/10**4
             gdb = gdb.to_crs('epsg:4326')
-            gdb.to_file("./vectors/alerts/{}.geojson".format(id), driver="GeoJSON")
+            gdb.to_file("./vectors/alerts/{}.json".format(id), driver="GeoJSON")
 
         
 def get_data(shapefile_pt, tile_id, name, id):
@@ -150,3 +153,47 @@ def postData(host, token, url, name):
         }
         ress = requests.post(f'{host}/api/adddeforestations/', json=json.loads(json.dumps(post)), headers=header)
         print(ress.status_code)
+
+
+def UpdateDatabase(url, name):
+    print("Post data", name)
+    geojson =  getjson(url)
+    for data in geojson['features']:
+        if data['geometry']['type'] == "Polygon":
+            geom = {
+            "type": "MultiPolygon",
+            "coordinates": [data['geometry']['coordinates']]
+            }
+        else:
+            geom = {
+            "type": "MultiPolygon",
+            "coordinates": data['geometry']['coordinates']
+            }
+        post = {
+            "id": data['properties']['comp_id'],
+            "event_id": "{}/{}/{}".format(data['properties']['comp_id'], data['properties']['dates'], data['properties']['conf']),
+            "alert_date":data['properties']['dates'],
+            "area": float(data['properties']['hectares']),
+            "geometry": geom
+
+        }
+
+        df = JSONParser().parse(post)
+        comp_id = df['id']
+        COMP = PALMS_COMPANY_LIST.objects.get(id=int(comp_id))
+        EVENT_ID=df['event_id']
+        AREA=df['area']
+        ALERT_DATE=df['alert_date']
+        geometry = df['geometry']
+        geom = GEOSGeometry(json.dumps(geometry))
+        if not DEFORESTATIONS_EVENTS_ALERT_LIST.objects.filter(EVENT_ID=EVENT_ID, COMP=COMP).exists():
+            DEFORESTATIONS_EVENTS_ALERT_LIST.objects.create(COMP=COMP, EVENT_ID=EVENT_ID, AREA=AREA, ALERT_DATE=ALERT_DATE, geom=geom)
+            return JsonResponse({"message": "Added Successfully" })
+        else:
+            Event = DEFORESTATIONS_EVENTS_ALERT_LIST.objects.get(COMP=COMP, EVENT_ID=EVENT_ID)
+            Event.AREA = AREA
+            Event.geom = geom
+            Event.save()
+            return JsonResponse({"message": "Data already Exist Updated" })
+        
+    
