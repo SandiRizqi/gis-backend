@@ -2,7 +2,6 @@ from __future__ import absolute_import, unicode_literals
 import os
 from celery import Celery
 from django.conf import settings
-<<<<<<< HEAD
 from celery.schedules import crontab
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gisbackend.settings')
@@ -33,21 +32,3 @@ app.autodiscover_tasks()
 @app.task(bind=True)
 def debug_task(self):
     print(f"Request: {self.request!r}")
-=======
-
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gisbackend.settings')
-app = Celery('gisbackend')
-app.conf.enable_utc = False
-
-app.conf.update(timezone='Asia/Jakarta')
-app.config_from_object(settings, namespace='CELERY')
-
-
-#CELERY BEAT SETTINGS
-app.autodiscover_tasks()
-@app.task(bind=True)
-def debug_task(self):
-    print(F"Request: {self.request!r}")
-
->>>>>>> 69d4217 (update)

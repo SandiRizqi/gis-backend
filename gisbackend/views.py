@@ -17,10 +17,7 @@ def TestURL(request):
         "message": "Service is online",
         "version": "V1.7" })
 
-=======
-        "version": "V1.5" })
 
 def Task(request):
     test_func.delay()
     return HttpResponse("Done")
->>>>>>> 69d4217 (update)

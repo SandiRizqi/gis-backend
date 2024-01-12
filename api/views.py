@@ -159,7 +159,6 @@ def ADD_DEFORESTATION_ALERT(request):
             Event.save()
             return JsonResponse({"message": "Data already Exist Updated" })
         
-<<<<<<< HEAD
         
 @csrf_exempt        
 def updatedeforestation(request):
@@ -175,6 +174,3 @@ def updatehotspot(request):
     return JsonResponse ({
         "message": "Task Done",
         "version": "V1.5" })
-=======
-
->>>>>>> 69d4217 (update)
