@@ -16,12 +16,6 @@ turfpy
 shapely
 geopandas
 python-decouple
-<<<<<<< HEAD
-=======
-celery
-redis
-django-celery-results
->>>>>>> 69d4217 (update)
 google-auth
 google-auth-oauthlib
 google-auth-httplib2
