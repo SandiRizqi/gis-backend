@@ -35,8 +35,8 @@ RUN chmod -R 777 /app
 #RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER root
 
-#RUN python manage.py makemigrations
-#RUN python manage.py migrate
+RUN python manage.py makemigrations
+RUN python manage.py migrate
 
 
 # During debugging, this entry point will"./manage.py runserver 0.0.0.0:9000 be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
