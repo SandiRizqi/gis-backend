@@ -15,7 +15,7 @@ def TestURL(request):
         "mode": MODE,
         "env": ENV_URL,
         "message": "Service is online",
-        "version": "V1.8" })
+        "version": "V1.9" })
 
 
 def Task(request):
