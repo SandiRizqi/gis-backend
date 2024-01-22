@@ -127,7 +127,7 @@ DATABASES = {
 
 
 # REDIS CACHE
-REDIS_URL = f"redis://{env.get('REDIS_URL')}:6379/0"
+REDIS_URL = f"redis://{env.get('REDIS_URL')}:6379/1"
     
 CACHES = {
     "default": {
