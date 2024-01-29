@@ -3,6 +3,7 @@ import os
 from celery import Celery
 from django.conf import settings
 from celery.schedules import crontab
+from django.apps import apps
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gisbackend.settings')
 
@@ -28,7 +29,9 @@ app.conf.beat_schedule = {
         'schedule' : crontab(minute=0, hour=0)
     }
 }
-app.autodiscover_tasks()
+app.autodiscover_tasks(lambda: [n.name for n in apps.get_app_configs()])
+
+
 @app.task(bind=True)
 def debug_task(self):
     print(f"Request: {self.request!r}")
