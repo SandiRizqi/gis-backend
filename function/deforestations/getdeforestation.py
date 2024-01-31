@@ -17,8 +17,8 @@ from django.contrib.gis.geos import GEOSGeometry
 
 
 def getjson(path):
-    with open(path) as f:
-        d = json.loads(json.dumps(f))
+    with open(path, 'r') as f:
+        d = json.load(f)
     return d
 
 
@@ -46,14 +46,11 @@ def get_tiles(db_connection_url):
     for tile in tiles_id:
         read_img(tile)
     estate = json.loads(estate.to_json())
-    threads = []
+    #threads = []
     for ft in estate['features']:
-        #get_data(ft, ft['properties']['tile_id'], ft['properties']['COMP_NAME'])
-        thread = threading.Thread(target=get_data, args=(ft, ft['properties']['tile_id'], ft['properties']['COMP_NAME'], ft['properties']['id']))
-        thread.start()
-        threads.append(thread)
-    for thread in threads:
-        thread.join()
+        get_data(ft, ft['properties']['tile_id'], ft['properties']['COMP_NAME'], ft['properties']['id'])
+        #thread = threading.Thread(target=get_data, args=(ft, ft['properties']['tile_id'], ft['properties']['COMP_NAME'], ft['properties']['id']))
+
     return True
 
 
@@ -90,11 +87,13 @@ def get_vector(name, id):
             for _, (s, v) in enumerate(shapes(arr, mask=is_valid, connectivity=4, transform=src.transform)):
                 
                 if s['type'] == "Polygon":
-                    coord = [s['coordinates']]
+                    coord = [list(s['coordinates'])]
                 else:
-                    coord = s['coordinates']
+                    coord = list(s['coordinates'])
 
-                row = {'properties': {'value': int(v),
+                row = {
+                    'type': 'Feature',
+                    'properties': {'value': int(v),
                                       'comp_name': name,
                                       'comp_id': id},
                         'geometry': {
@@ -103,25 +102,36 @@ def get_vector(name, id):
                                       }}
                 geoms.append(row)
             #geoms = list(results)
-            gdb = gpd.GeoDataFrame.from_features(geoms).set_crs('epsg:4326')
-            gdb['dates'] = gdb.apply(lambda row: getdate(int(row.value)), axis=1)
-            gdb['conf'] = gdb.apply(lambda row: getconf(int(row.value)), axis=1)
-            gdb = gdb.dissolve(by=['dates', 'comp_name', 'comp_id'])
-            gdb = gdb.sort_values(by=['dates'])
-            gdb = gdb.to_crs({'init': 'epsg:3857'})
-            gdb['hectares'] = gdb['geometry'].area/10**4
-            gdb = gdb.to_crs('epsg:4326')
-            gdb.to_file("./vectors/alerts/{}.json".format(id), driver="GeoJSON")
+            features = {
+                "type": "FeatureCollection",
+                "features": geoms
+                }
+            
+            if len(features['features']) > 0:
+                print(features)
+                gdb = gpd.GeoDataFrame.from_features(features)
+                gdb = gdb.set_geometry('geometry', crs='EPSG:4326')
+                gdb['dates'] = gdb.apply(lambda row: getdate(int(row.value)), axis=1)
+                gdb['conf'] = gdb.apply(lambda row: getconf(int(row.value)), axis=1)
+                gdb = gdb.dissolve(by=['dates', 'comp_name', 'comp_id'])
+                gdb = gdb.sort_values(by=['dates'])
+                gdb = gdb.to_crs('epsg:3857')
+                gdb['hectares'] = gdb['geometry'].area/10**4
+                gdb = gdb.to_crs('epsg:4326')
+                gdb.to_file("./vectors/alerts/{}.json".format(id), driver="GeoJSON")
+            else:
+                print("No alert")
+
+        return True
 
         
 def get_data(shapefile_pt, tile_id, name, id):
-    try:
+    
         #read_img(tile_id)
-        print("Processing, ", name)
-        rasterio_clip(shapefile_pt, tile_id, id)
-        get_vector(name, id)
-    except Exception as er:
-        print(er)
+    print("Processing, ", name)
+    rasterio_clip(shapefile_pt, tile_id, id)
+    get_vector(name, id)
+
    
 
 
@@ -178,7 +188,7 @@ def UpdateDatabase(url, name):
 
         }
 
-        df = JSONParser().parse(post)
+        df = post
         comp_id = df['id']
         COMP = PALMS_COMPANY_LIST.objects.get(id=int(comp_id))
         EVENT_ID=df['event_id']
@@ -186,14 +196,16 @@ def UpdateDatabase(url, name):
         ALERT_DATE=df['alert_date']
         geometry = df['geometry']
         geom = GEOSGeometry(json.dumps(geometry))
-        if not DEFORESTATIONS_EVENTS_ALERT_LIST.objects.filter(EVENT_ID=EVENT_ID, COMP=COMP).exists():
+        if not DEFORESTATIONS_EVENTS_ALERT_LIST.objects.filter(EVENT_ID=EVENT_ID).exists():
             DEFORESTATIONS_EVENTS_ALERT_LIST.objects.create(COMP=COMP, EVENT_ID=EVENT_ID, AREA=AREA, ALERT_DATE=ALERT_DATE, geom=geom)
-            return JsonResponse({"message": "Added Successfully" })
+            print("Add new data")
+            #return JsonResponse({"message": "Added Successfully" })
         else:
-            Event = DEFORESTATIONS_EVENTS_ALERT_LIST.objects.get(COMP=COMP, EVENT_ID=EVENT_ID)
+            Event = DEFORESTATIONS_EVENTS_ALERT_LIST.objects.get(EVENT_ID=EVENT_ID)
             Event.AREA = AREA
             Event.geom = geom
             Event.save()
-            return JsonResponse({"message": "Data already Exist Updated" })
+            print("Update data")
+            #return JsonResponse({"message": "Data already Exist Updated" })
         
     

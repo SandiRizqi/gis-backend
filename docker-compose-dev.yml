@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  gisbackend:
+    container_name: gisbackend
+    image: gis-backend-gisbackend
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: gunicorn gisbackend.wsgi:application -b 0.0.0.0:9000
+    ports:
+      - 9000:9000
+
+    depends_on:
+      - redis
+    networks:
+      - live
+
+  celery:
+    container_name: giscelery
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: celery -A gisbackend.celery worker -l info -B --pool solo
+    pull_policy: never
+    depends_on:
+      - gisbackend
+    networks:
+      - live
+
+  redis:
+    image: 'redis:alpine'
+    hostname: redis
+    networks:
+      - live
+
+
+networks:
+  live:

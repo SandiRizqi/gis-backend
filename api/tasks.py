@@ -78,7 +78,7 @@ def add_hotspot(self):
 
 
 @shared_task(bind=True)
-def update_deforestations(self):
+def update_deforestations_data(self):
     dbhost = env.get('DB_HOST')
     database = env.get('DB_NAME')
     user = env.get('DB_USER')
@@ -89,9 +89,10 @@ def update_deforestations(self):
     db_connection_url = f"postgresql://{user}:{password}@{dbhost}:{str(port)}/{database}"
     tiles = get_tiles(db_connection_url)
     if tiles:
-        files = [os.path.basename(x) for x in glob('./vectors/alerts/*.geojson')]
+        files = [os.path.basename(x) for x in glob('./vectors/alerts/*.json')]
         for file in files:
             UpdateDatabase('./vectors/alerts/' + file, file)
+            print(file)
             #postData(webhost, token, './vectors/alerts/' + file, file)
         files = glob('./vectors/alerts/*')
         for items in files:

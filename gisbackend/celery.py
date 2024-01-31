@@ -12,9 +12,13 @@ app.conf.enable_utc = False
 app.conf.update(timezone='Asia/Jakarta')
 app.config_from_object(settings, namespace='CELERY')
 app.conf.beat_schedule = {
-    'update-deforestations' : {
-        'task': 'api.tasks.update_deforestations',
-        'schedule' : crontab(minute='*/25')
+    'update-deforestations-data' : {
+        'task': 'api.tasks.update_deforestations_data',
+        'schedule' : crontab(minute='*/15')
+    },
+    'update-deforestations-alert' : {
+        'task': 'api.tasks.update_deforestations_data',
+        'schedule' : crontab(minute='*/10')
     },
     'add-hotspot' : {
         'task': 'api.tasks.add_hotspot',

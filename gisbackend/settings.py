@@ -129,6 +129,7 @@ DATABASES = {
 # REDIS CACHE
 REDIS_URL = f"redis://{env.get('REDIS_URL')}:6379/0"
     
+'''
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -138,6 +139,9 @@ CACHES = {
         },
     }
 }
+
+
+'''
 
 
 
