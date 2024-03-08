@@ -151,7 +151,7 @@ def postData(host, token, url, name):
             }
         post = {
             "id": data['properties']['comp_id'],
-            "event_id": "{}/{}/{}".format(data['properties']['comp_id'], data['properties']['dates'], data['properties']['conf']),
+            "event_id": "{}/{}".format(data['properties']['comp_id'], data['properties']['dates']),
             "alert_date":data['properties']['dates'],
             "area": float(data['properties']['hectares']),
             "geometry": geom
@@ -181,7 +181,7 @@ def UpdateDatabase(url, name):
             }
         post = {
             "id": data['properties']['comp_id'],
-            "event_id": "{}/{}/{}".format(data['properties']['comp_id'], data['properties']['dates'], data['properties']['conf']),
+            "event_id": "{}/{}".format(data['properties']['comp_id'], data['properties']['dates']),
             "alert_date":data['properties']['dates'],
             "area": float(data['properties']['hectares']),
             "geometry": geom
