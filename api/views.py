@@ -150,11 +150,11 @@ def ADD_DEFORESTATION_ALERT(request):
         geometry = df['geometry']
         geom = GEOSGeometry(json.dumps(geometry))
         if not DEFORESTATIONS_EVENTS_ALERT_LIST.objects.filter(EVENT_ID=EVENT_ID).exists():
-            DEFORESTATIONS_EVENTS_ALERT_LIST.objects.create(COMP=COMP, EVENT_ID=EVENT_ID, AREA=AREA, ALERT_DATE=ALERT_DATE, geom=geom)
+            DEFORESTATIONS_EVENTS_ALERT_LIST.objects.create(COMP=COMP, EVENT_ID=EVENT_ID, HA=AREA, ALERT_DATE=ALERT_DATE, geom=geom)
             return JsonResponse({"message": "Added Successfully" })
         else:
             Event = DEFORESTATIONS_EVENTS_ALERT_LIST.objects.get(COMP=COMP, EVENT_ID=EVENT_ID)
-            Event.AREA = AREA
+            Event.HA = AREA
             Event.geom = geom
             Event.save()
             return JsonResponse({"message": "Data already Exist Updated" })
