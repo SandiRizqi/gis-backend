@@ -113,7 +113,7 @@ def get_vector(name, id):
                 gdb = gdb.set_geometry('geometry', crs='EPSG:4326')
                 gdb['dates'] = gdb.apply(lambda row: getdate(int(row.value)), axis=1)
                 gdb['conf'] = gdb.apply(lambda row: getconf(int(row.value)), axis=1)
-                gdb = gdb.dissolve(by=['dates', 'comp_name', 'comp_id'])
+                gdb = gdb.dissolve(by=['dates', 'comp_name', 'comp_id', 'conf'])
                 gdb = gdb.sort_values(by=['dates'])
                 gdb = gdb.to_crs('epsg:3857')
                 gdb['hectares'] = gdb['geometry'].area/10**4
@@ -181,9 +181,10 @@ def UpdateDatabase(url, name):
             }
         post = {
             "id": data['properties']['comp_id'],
-            "event_id": "{}/{}".format(data['properties']['comp_id'], data['properties']['dates']),
+            "event_id": "{}/{}/{}".format(data['properties']['comp_id'], data['properties']['dates'], data['properties']['conf']),
             "alert_date":data['properties']['dates'],
-            "area": float(data['properties']['hectares']),
+            "ha": float(data['properties']['hectares']),
+            "conf": data['properties']['conf'],
             "geometry": geom
 
         }
@@ -192,17 +193,19 @@ def UpdateDatabase(url, name):
         comp_id = df['id']
         COMP = PALMS_COMPANY_LIST.objects.get(id=int(comp_id))
         EVENT_ID=df['event_id']
-        AREA=df['area']
+        HA=df['ha']
+        CONF=df['ha']
         ALERT_DATE=df['alert_date']
         geometry = df['geometry']
         geom = GEOSGeometry(json.dumps(geometry))
         if not DEFORESTATIONS_EVENTS_ALERT_LIST.objects.filter(EVENT_ID=EVENT_ID).exists():
-            DEFORESTATIONS_EVENTS_ALERT_LIST.objects.create(COMP=COMP, EVENT_ID=EVENT_ID, AREA=AREA, ALERT_DATE=ALERT_DATE, geom=geom)
+            DEFORESTATIONS_EVENTS_ALERT_LIST.objects.create(COMP=COMP, EVENT_ID=EVENT_ID, HA=HA, ALERT_DATE=ALERT_DATE, CONF=CONF, geom=geom)
             print("Add new data")
             #return JsonResponse({"message": "Added Successfully" })
         else:
             Event = DEFORESTATIONS_EVENTS_ALERT_LIST.objects.get(EVENT_ID=EVENT_ID)
-            Event.AREA = AREA
+            Event.CONF = CONF
+            Event.HA = HA
             Event.geom = geom
             Event.save()
             print("Update data")

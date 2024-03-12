@@ -16,8 +16,8 @@ import mimetypes
 from decouple import Config, RepositoryEnv
 
 
-if os.path.exists('.dev.env'):
-    ENV_URL = '.dev.env'
+if os.path.exists('.env.dev'):
+    ENV_URL = '.env.dev'
 else:
     ENV_URL = '.env'
 
