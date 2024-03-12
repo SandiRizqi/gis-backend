@@ -194,7 +194,7 @@ def UpdateDatabase(url, name):
         COMP = PALMS_COMPANY_LIST.objects.get(id=int(comp_id))
         EVENT_ID=df['event_id']
         HA=df['ha']
-        CONF=df['ha']
+        CONF=df['conf']
         ALERT_DATE=df['alert_date']
         geometry = df['geometry']
         geom = GEOSGeometry(json.dumps(geometry))
