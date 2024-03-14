@@ -52,7 +52,7 @@ class PALMS_COMPANY_LIST(models.Model):
 class FIRE_HOTSPOT(models.Model):
     UID = models.CharField(max_length=250)
     DATE = models.DateField(default=timezone.now)
-    UPDATE_TIME = models.DateTimeField(auto_now_add=True)
+    UPDATE_TIME = models.DateTimeField(default=timezone.now)
     TIME = models.TimeField()
     CONF = models.IntegerField()
     SATELLITE = models.CharField(max_length=20)
@@ -78,7 +78,7 @@ class FIRE_EVENTS_ALERT_LIST(models.Model):
     #EVENT_ID = models.CharField(max_length=250)
     EVENT_DATE = models.DateField(default=timezone.now)
     EVENT_TIME = models.TimeField()
-    UPDATE_TIME = models.DateTimeField(auto_now_add=True)
+    UPDATE_TIME = models.DateTimeField(default=timezone.now)
     CONF = models.IntegerField()
     SATELLITE = models.CharField(max_length=20)
     RADIUS = models.IntegerField()
@@ -106,7 +106,7 @@ class DEFORESTATIONS_EVENTS_ALERT_LIST(models.Model):
     CREATED = models.DateTimeField(default=timezone.now)
     UPDATED = models.DateTimeField(auto_now=True)
     CONF = models.IntegerField(blank=True, null=True, default=0)
-    HA = models.DecimalField(max_digits=15, decimal_places=4, blank=True, null=True)
+    AREA = models.DecimalField(max_digits=15, decimal_places=4, blank=True, null=True)
     READ_BY = ArrayField(models.CharField(max_length=250, null=True, blank=True), default=list, blank=True, null=True)
     geom = models.MultiPolygonField(srid=4326, geography=True, null=True, blank=True, editable=True)
 
