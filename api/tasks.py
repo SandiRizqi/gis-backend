@@ -39,7 +39,7 @@ def add_hotspot(self):
             respnse = requests.post(post_url, json=detail, headers=headers)
             print("LAPAN :", respnse.status_code)
 
-    siponi_url = 'https://sipongi.menlhk.go.id/api/opsroom/indoHotspot?wilayah=IN&filterperiode=false&late=24&satelit[]=NASA-MODIS&satelit[]=NASA-SNPP&satelit[]=NASA-NOAA20&confidence[]=high&confidence[]=medium&confidence[]=low'
+    siponi_url = 'https://opsroom.sipongidata.my.id/api/opsroom/indoHotspot?wilayah=IN&filterperiode=false&late=24&satelit[]=NASA-MODIS&satelit[]=NASA-SNPP&satelit[]=NASA-NOAA20&confidence[]=high&confidence[]=medium&confidence[]=low'
     data = requests.get(siponi_url)
     data = data.json()
     if len(data['features']) > 0:

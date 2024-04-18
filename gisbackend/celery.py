@@ -9,12 +9,12 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gisbackend.settings')
 
 app = Celery('gisCelery')
 app.conf.enable_utc = False
-app.conf.update(timezone='Asia/Jakarta')
+app.conf.update(timezone='Asia/Jakarta', enable_utc=False)
 app.config_from_object(settings, namespace='CELERY')
 app.conf.beat_schedule = {
     'update-deforestations-aler-data' : {
         'task': 'api.tasks.update_deforestations_data',
-        'schedule' : crontab(minute='*/15')
+        'schedule' : crontab(minute=0, hour='9,16')
     },
     'add-hotspot' : {
         'task': 'api.tasks.add_hotspot',
