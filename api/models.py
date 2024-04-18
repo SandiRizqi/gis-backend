@@ -102,9 +102,9 @@ class FIRE_EVENTS_ALERT_LIST(models.Model):
 class DEFORESTATIONS_EVENTS_ALERT_LIST(models.Model):
     COMP = models.ForeignKey(PALMS_COMPANY_LIST, on_delete=models.CASCADE, related_name='comp_list', default="")
     EVENT_ID = models.CharField(max_length=250)
-    ALERT_DATE = models.DateTimeField(default=timezone.now)
-    CREATED = models.DateTimeField(default=timezone.now)
-    UPDATED = models.DateTimeField(auto_now=True)
+    ALERT_DATE = models.DateField(default=timezone.now)
+    CREATED = models.DateField(default=timezone.now)
+    UPDATED = models.DateField(auto_now=True)
     CONF = models.IntegerField(blank=True, null=True, default=0)
     AREA = models.DecimalField(max_digits=15, decimal_places=4, blank=True, null=True)
     READ_BY = ArrayField(models.CharField(max_length=250, null=True, blank=True), default=list, blank=True, null=True)
