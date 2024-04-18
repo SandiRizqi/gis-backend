@@ -23,7 +23,7 @@ google-api-python-client
 earthengine-api
 psycopg2
 sqlalchemy
-celery
+celery==2.5.5
 django-celery-beat
 django-celery-results
 redis
