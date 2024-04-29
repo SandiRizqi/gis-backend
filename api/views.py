@@ -126,6 +126,17 @@ class FireAlertAPIViewset(viewsets.ModelViewSet):
         permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
     
+    
+    
+class DeforestationAlertAPIViewset(viewsets.ModelViewSet):
+    queryset = DEFORESTATIONS_EVENTS_ALERT_LIST.objects.all()
+    serializer_class = DeforestationSerializer
+
+    def get_permissions(self):
+        permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
+
+    
 @csrf_exempt   
 def GET_DEFORESTATIONS(request):
     #print(ENV_URL)

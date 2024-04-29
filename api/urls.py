@@ -7,6 +7,7 @@ urlpatterns = [
     path('addhotspot/', views.ADD_HOTSPOT),
     path('hotspot/', views.LIST_HOTSPOT),
     path('events/fires/company/', views.LIST_FIRE_EVENTS),
+    path('events/deforestations/', views.DeforestationAlertAPIViewset.as_view({'get': 'list'})),
     path('listcompany/', views.LIST_COMPANY),
     path('endpoints/', include(router.urls), name="endpoints" ),
     path('getdeforestations/', views.GET_DEFORESTATIONS),
