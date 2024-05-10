@@ -1,4 +1,4 @@
-FROM python:3.8-slim
+FROM python:3.8-slim-bullseye
 
 
 EXPOSE 9000
@@ -16,7 +16,7 @@ RUN apt-get update \
         build-essential \
         libgdal-dev \
         python3-dev \
-        #libssl-dev
+        libssl-dev
 # Install the Python bindings for GDAL
 RUN pip install numpy \
     && pip install gdal==$(gdal-config --version | awk -F'[.]' '{print $1"."$2}')
