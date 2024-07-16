@@ -5,25 +5,29 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy import text
 import datetime
+from decouple import Config, RepositoryEnv
 
 
 
-
-if os.path.exists('./.dev.env'):
-    MODE = "Development"
+if os.path.exists('../.env.dev'):
+    ENV_URL = '../.env.dev'
 else:
-    MODE = "Production"
+    ENV_URL = '../.env'
+
+
+
+env=Config(RepositoryEnv(ENV_URL))
 
     
 today = datetime.date.today()
-host = 'http://127.0.0.1:9000/'
+host = env.get('WEB_HOST')
 
 
-if MODE == "Production":
-    token ='Token 96188a88794241ebbd4c9594cb13fbc9f7b80dd2' #PROD
+if env.get('MODE') == "Production":
+    token ='Token ' + env.get('TOKEN')
     db_connection_url = "postgresql://tap_gis:T4pGreenGis88@postgresgis.tap-agri.com:5432/db_gis"
 else:
-    token = 'Token c63ebf26351c6f5dce1f2eb12930544caad04572' #DEV
+    token = 'Token ' + env.get('TOKEN')
     db_connection_url = "postgresql://tap_gis:tap_gis@dbpostgresdev.tap-agri.com:5432/db_gis"
 
 
@@ -36,7 +40,8 @@ value = "Triputra Group"
 sql = "SELECT * FROM \"{}\"".format(table)
 polygons = gpd.GeoDataFrame.from_postgis(text(sql), con, geom_col='geom').to_crs("+proj=utm +zone=50 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
 
-point = requests.get(host + 'api/hotspot/?conf=0&startdate={}&enddate={}'.format(today, today))
+point = requests.get(host + '/api/hotspot/?conf=0&startdate={}&enddate={}'.format(today, today))
+print("HOTSPOT TODAY", point)
 point = json.dumps(point.json())
 point = gpd.read_file(point).to_crs("+proj=utm +zone=50 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
 
@@ -71,17 +76,18 @@ def sendAlert(featurescollections):
                     "Content-Type": "application/json",
                     "Authorization" : token
             }
-
-            response = requests.post(host + 'api/hotspotevents/', data=json.dumps(post), headers=headers)
+            print(post)
+            response = requests.post(host + '/api/events/fires/company/', data=json.dumps(post), headers=headers)
             response.raise_for_status()  
             print(response.json())
-        except requests.exceptions.RequestException:
-            print(f"Request failed with error:")
+        except requests.exceptions.RequestException as e:
+            print(f"Request failed with error:", e)
             continue
-        except requests.exceptions.ConnectionError:
-            print(f"Request failed with error:")
+        except requests.exceptions.ConnectionError as e:
+            print(f"Request failed with error:", e)
             continue   # If there was an error, continue to the ne#print(post)
-    print("Update Finished")
+
+    print("Update Finished", env.get('MODE'))
 
 
 def addcat(row):

@@ -46,8 +46,8 @@ def sendAlert(featurescollections, host, token):
                 response = requests.post(host + '/api/events/fires/company/', data=json.dumps(post), headers=headers)
                 response.raise_for_status()  
                 print(response.json())
-            except requests.exceptions.RequestException:
-                print(f"Request failed with error:")
+            except requests.exceptions.RequestException as e:
+                print(f"Request failed with error:", e)
                 continue
 
 

@@ -185,3 +185,14 @@ def updatehotspot(request):
     return JsonResponse ({
         "message": "Task Done",
         "version": "V1.5" })
+
+
+
+@csrf_exempt   
+def GET_HOTSPOT_ALERT(request):
+    print("UPDATING HOTSPOT ALERT")
+    subprocess.Popen(['python', './function/getHotspotAlert.py'])
+    print("UPDATING HOTSPOT ALERT, FINISHED")
+    return JsonResponse({
+        "message": "POST HOTSPOT ALERT Successfully"
+    })

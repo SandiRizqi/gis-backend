@@ -9,6 +9,7 @@ from function.hotspots.update import getNear
 from function.hotspots.utils import inactive_hotspot
 from function.deforestations.getdeforestation import *
 from datetime import datetime, timedelta, date
+import subprocess
 
 
 @shared_task(bind=True)
@@ -131,6 +132,12 @@ def update_hotspots(self):
     point = gpd.read_file(point).to_crs("+proj=utm +zone=50 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
 
     getNear(point, polygons, webhost, token)
+    return f"Hotspot Updated :{MODE}"
+
+@shared_task(bind=True)
+def update_hotspots_backup(self):
+    MODE = env.get('MODE')
+    subprocess.Popen(['python', './function/getHotspotAlert.py'])
     return f"Hotspot Updated :{MODE}"
 
 

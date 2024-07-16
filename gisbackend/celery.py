@@ -24,6 +24,10 @@ app.conf.beat_schedule = {
         'task': 'api.tasks.update_hotspots',
         'schedule' : crontab(minute='*/15')
     },
+    'update-hotspots-alert_backup' : {
+        'task': 'api.tasks.update_hotspots_backup',
+        'schedule' : crontab(minute='*/27')
+    },
     'deactivate-hotspots-alert' : {
         'task': 'api.tasks.deactivate_hotspots',
         'schedule' : crontab(minute=0, hour=0)
