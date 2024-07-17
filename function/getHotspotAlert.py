@@ -22,6 +22,7 @@ env=Config(RepositoryEnv(ENV_URL))
 today = datetime.date.today()
 host = env.get('WEB_HOST')
 
+print(env.get('MODE'))
 
 if env.get('MODE') == "Production":
     token ='Token ' + env.get('TOKEN')
