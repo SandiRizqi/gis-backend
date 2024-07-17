@@ -18,6 +18,14 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 
+from django.contrib.admin.views.decorators import staff_member_required
+from util.chart import *
+from django.db.models import Count, F, Sum, Avg
+from django.db.models.functions import ExtractYear, ExtractMonth
+from django.http import JsonResponse
+
+
+
 
 @csrf_exempt
 @api_view(['GET'])
@@ -196,3 +204,70 @@ def GET_HOTSPOT_ALERT(request):
     return JsonResponse({
         "message": "POST HOTSPOT ALERT Successfully"
     })
+
+
+
+#@staff_member_required
+@csrf_exempt
+def get_filter_options(request):
+    grouped = DEFORESTATIONS_EVENTS_ALERT_LIST.objects.annotate(year=ExtractYear("ALERT_DATE")).values("year").order_by("-year").distinct()
+    options = [purchase["year"] for purchase in grouped]
+
+    return JsonResponse({
+        "options": options,
+    })
+
+
+
+@csrf_exempt
+def get_deforestations_chart(request, year):
+    deforestations = DEFORESTATIONS_EVENTS_ALERT_LIST.objects.filter(ALERT_DATE__year=year)
+    grouped = deforestations.annotate(month=ExtractMonth("ALERT_DATE"))\
+        .values("month").annotate(total=Sum("AREA")).values("month", "total").order_by("month")
+
+    df_dict = get_year_dict()
+
+    for group in grouped:
+        df_dict[months[group["month"]-1]] = round(group["total"], 2)
+
+    return JsonResponse({
+        "title": f"Deforestations in {year}",
+        "data": {
+            "labels": list(df_dict.keys()),
+            "datasets": [{
+                "label": "Ha",
+                "backgroundColor": colorPrimary,
+                "borderColor": colorPrimary,
+                "data": list(df_dict.values()),
+            }]
+        },
+    })
+
+@csrf_exempt
+def get_hotspot_chart(request, year):
+    hotspot = FIRE_EVENTS_ALERT_LIST.objects.filter(EVENT_DATE__year=year)
+    grouped = hotspot.annotate(month=ExtractMonth("EVENT_DATE"))\
+        .values("month").annotate(total=Count("id")).values("month", "total").order_by("month")
+
+    df_dict = get_year_dict()
+
+    for group in grouped:
+        df_dict[months[group["month"]-1]] = round(group["total"], 2)
+
+    return JsonResponse({
+        "title": f"Hotspot in {year}",
+        "data": {
+            "labels": list(df_dict.keys()),
+            "datasets": [{
+                "label": "Count",
+                "backgroundColor": colorPrimary,
+                "borderColor": colorPrimary,
+                "data": list(df_dict.values()),
+            }]
+        },
+    })
+
+
+
+def statistics_view(request):
+    return render(request, "statistics.html", {})

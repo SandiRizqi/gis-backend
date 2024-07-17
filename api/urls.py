@@ -14,4 +14,7 @@ urlpatterns = [
     path('updatedeforestations/', views.updatedeforestation),
     path('updatehotspots/', views.updatehotspot),
     path('adddeforestations/', views.ADD_DEFORESTATION_ALERT),
+    path("chart/filter-options/", views.get_filter_options, name="chart-filter-options"),
+    path("chart/deforestations/<int:year>/", views.get_deforestations_chart, name="chart-deforestations"),
+    path("chart/hotspot/<int:year>/", views.get_hotspot_chart, name="chart-hotspot"),
 ]

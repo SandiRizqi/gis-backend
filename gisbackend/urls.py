@@ -19,8 +19,16 @@ from django.conf import settings
 from django.conf.urls.static import static
 from .views import *
 
+from .admin import admin_statistics_view
+
+
 urlpatterns = [
     path('', TestURL),
+    path(   # new
+        "admin/statistics/",
+        admin.site.admin_view(admin_statistics_view),
+        name="admin-statistics"
+    ),
     path('api/', include('api.urls')),
     path('admin/', admin.site.urls),
     

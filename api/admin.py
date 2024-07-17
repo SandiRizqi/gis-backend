@@ -3,6 +3,7 @@ from .models import PALMS_COMPANY_LIST, FIRE_EVENTS_ALERT_LIST, FIRE_HOTSPOT, DE
 from leaflet.admin import LeafletGeoAdmin
 
 
+
 class COMPAdmin(LeafletGeoAdmin):
     list_display = ('COMP_NAME', 'COMP_GROUP')
     search_fields = ('COMP_NAME', 'COMP_GROUP')
@@ -34,3 +35,8 @@ admin.site.register(PALMS_COMPANY_LIST, COMPAdmin)
 admin.site.register(FIRE_EVENTS_ALERT_LIST, FireEventsAdmin)
 admin.site.register(FIRE_HOTSPOT, FireHotspotAdmin)
 admin.site.register(DEFORESTATIONS_EVENTS_ALERT_LIST, DFEventsAdmin)
+
+
+
+
+

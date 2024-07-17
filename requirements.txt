@@ -3,6 +3,7 @@ botocore
 Django==3.2.1
 django-cors-headers
 djangorestframework
+django-admin-interface
 whitenoise
 gunicorn
 psycopg2-binary
