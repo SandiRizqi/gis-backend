@@ -236,7 +236,7 @@ def get_deforestations_chart(request, year):
             "labels": list(df_dict.keys()),
             "datasets": [{
                 "label": "Ha",
-                "backgroundColor": colorPrimary,
+                "backgroundColor": generate_color_palette(len(df_dict)),
                 "borderColor": colorPrimary,
                 "data": list(df_dict.values()),
             }]
@@ -260,7 +260,7 @@ def get_hotspot_chart(request, year):
             "labels": list(df_dict.keys()),
             "datasets": [{
                 "label": "Count",
-                "backgroundColor": colorPrimary,
+                "backgroundColor": generate_color_palette(len(df_dict)),
                 "borderColor": colorPrimary,
                 "data": list(df_dict.values()),
             }]
