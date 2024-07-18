@@ -17,8 +17,8 @@ class CustomAdminSite(admin.AdminSite):
         app_list = super().get_app_list(request)
         app_list += [
             {
-                "name": "My Stats App",
-                "app_label": "my_stats_app",
+                "name": "Dashboard",
+                "app_label": "my_dashboard",
                 "models": [
                     {
                         "name": "Statistics",
