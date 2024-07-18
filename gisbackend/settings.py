@@ -198,6 +198,10 @@ USE_TZ = False
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+
+ADDITIONAL_MEDIA_URL = '/admin-interface/'
+ADDITIONAL_MEDIA_ROOT = os.path.join(BASE_DIR, 'admin-interface')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
