@@ -9,10 +9,10 @@ from decouple import Config, RepositoryEnv
 
 
 
-if os.path.exists('../.env.dev'):
-    ENV_URL = '../.env.dev'
+if os.path.exists('.env.dev'):
+    ENV_URL = '.env.dev'
 else:
-    ENV_URL = '../.env'
+    ENV_URL = '.env'
 
 
 
@@ -138,5 +138,10 @@ def getNear(pnt, pol):
     #attribute1 = joined.iloc[0]['attribute1']
     #attribute2 = nearest_feature['attribute2']
     #print(f"Nearest distance = {distance}, attribute1 = {attribute1}, attribute2 = {attribute2}")
+def runProcessHotspot():
+    getNear(point, polygons)
+
+
+
 
 getNear(point, polygons)

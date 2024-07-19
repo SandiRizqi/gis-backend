@@ -10,7 +10,7 @@ from function.hotspots.utils import inactive_hotspot
 from function.deforestations.getdeforestation import *
 from datetime import datetime, timedelta, date
 import subprocess
-
+from function.getHotspotAlert import runProcessHotspot
 
 @shared_task(bind=True)
 def add_hotspot(self):
@@ -137,7 +137,8 @@ def update_hotspots(self):
 @shared_task(bind=True)
 def update_hotspots_backup(self):
     MODE = env.get('MODE')
-    subprocess.Popen(['python', './function/getHotspotAlert.py'])
+    #subprocess.Popen(['python', './function/getHotspotAlert.py'])
+    runProcessHotspot()
     return f"Hotspot Updated :{MODE}"
 
 
