@@ -41,7 +41,7 @@ value = "Triputra Group"
 sql = "SELECT * FROM \"{}\"".format(table)
 polygons = gpd.GeoDataFrame.from_postgis(text(sql), con, geom_col='geom').to_crs("+proj=utm +zone=50 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
 
-point = requests.get(host + 'api/hotspot/?conf=0&startdate={}&enddate={}'.format(today, today))
+point = requests.get(host + '/api/hotspot/?conf=0&startdate={}&enddate={}'.format(today, today))
 print("HOTSPOT TODAY", point)
 point = json.dumps(point.json())
 point = gpd.read_file(point).to_crs("+proj=utm +zone=50 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
@@ -144,4 +144,4 @@ def runProcessHotspot():
 
 
 
-getNear(point, polygons)
+#getNear(point, polygons)
