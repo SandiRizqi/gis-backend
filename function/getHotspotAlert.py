@@ -34,17 +34,7 @@ else:
 
 
 con = create_engine(db_connection_url)
-table = "api_palms_company_list"
-column = "COMP_GROUP"
-value = "Triputra Group"
-#sql = "SELECT * FROM \"{}\" WHERE \"{}\" = \'{}\'".format(table, column, value)
-sql = "SELECT * FROM \"{}\"".format(table)
-polygons = gpd.GeoDataFrame.from_postgis(text(sql), con, geom_col='geom').to_crs("+proj=utm +zone=50 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
 
-point = requests.get(host + '/api/hotspot/?conf=0&startdate={}&enddate={}'.format(today, today))
-print("HOTSPOT TODAY", point)
-point = json.dumps(point.json())
-point = gpd.read_file(point).to_crs("+proj=utm +zone=50 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
 
 
 def sendAlert(featurescollections):
@@ -104,7 +94,7 @@ def addcat(row):
 
                                          
 
-def getNear(pnt, pol):
+def getNear(point, polygons):
     print(point.head(5))
     print(len(point))
     print(polygons.head(5))
@@ -139,6 +129,17 @@ def getNear(pnt, pol):
     #attribute2 = nearest_feature['attribute2']
     #print(f"Nearest distance = {distance}, attribute1 = {attribute1}, attribute2 = {attribute2}")
 def runProcessHotspot():
+    table = "api_palms_company_list"
+    column = "COMP_GROUP"
+    value = "Triputra Group"
+    #sql = "SELECT * FROM \"{}\" WHERE \"{}\" = \'{}\'".format(table, column, value)
+    sql = "SELECT * FROM \"{}\"".format(table)
+    polygons = gpd.GeoDataFrame.from_postgis(text(sql), con, geom_col='geom').to_crs("+proj=utm +zone=50 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
+
+    point = requests.get(host + '/api/hotspot/?conf=0&startdate={}&enddate={}'.format(today, today))
+    print("HOTSPOT TODAY", point)
+    point = json.dumps(point.json())
+    point = gpd.read_file(point).to_crs("+proj=utm +zone=50 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
     getNear(point, polygons)
 
 
