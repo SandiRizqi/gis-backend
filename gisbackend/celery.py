@@ -11,6 +11,7 @@ app = Celery('gisCelery')
 app.conf.enable_utc = False
 app.conf.update(timezone='Asia/Jakarta', enable_utc=False)
 app.config_from_object(settings, namespace='CELERY')
+app.conf.broker_connection_retry_on_startup = True
 app.conf.beat_schedule = {
     'update-deforestations-aler-data' : {
         'task': 'api.tasks.update_deforestations_data',
