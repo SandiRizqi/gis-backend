@@ -65,5 +65,10 @@ class TMAT_LOCATIONSAdmin(admin.ModelAdmin):
             'opts': self.model._meta
         }
         return HttpResponse(render(request, "admin/upload_csv.html", context))
+    
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['upload_csv_url'] = 'upload-csv/'  # URL for CSV upload
+        return super(TMAT_LOCATIONSAdmin, self).changelist_view(request, extra_context=extra_context)
 
 admin.site.register(TMAT_LOCATIONS, TMAT_LOCATIONSAdmin)
