@@ -7,6 +7,8 @@ from django.http import HttpResponse
 from .models import TMAT_LOCATIONS
 from .forms import TMATLocationsCSVUploadForm
 from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import GEOSGeometry
+import json
 
 class TMAT_LOCATIONSAdmin(admin.ModelAdmin):
     list_display = ('code', 'werks', 'afd_name', 'block_name', 'no', 'soil', 'longitude', 'latitude')
@@ -42,7 +44,11 @@ class TMAT_LOCATIONSAdmin(admin.ModelAdmin):
                         continue
 
                     code, werks, afd_name, block_name, no, soil, longitude, latitude = row
-                    geom = Point(float(longitude), float(latitude), srid=4326)
+                    feature = {
+                                "type": "Point",
+                                "coordinates": [longitude, longitude]
+                            }
+                    geom = GEOSGeometry(json.dumps(feature))
 
                     # Update or create TMAT_LOCATIONS object
                     TMAT_LOCATIONS.objects.update_or_create(

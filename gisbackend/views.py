@@ -14,4 +14,4 @@ def TestURL(request):
         "mode": MODE,
         "env": ENV_URL,
         "message": "Service is online",
-        "version": "V3.2" })
+        "version": "V3.3" })
