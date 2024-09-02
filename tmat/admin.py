@@ -1,10 +1,9 @@
-# admin.py
 import csv
 from django.contrib import admin
 from django.shortcuts import redirect, render
 from django.urls import path
-from django.http import HttpResponse
 from django.contrib import messages
+from django.http import HttpResponse
 from .models import TMAT_LOCATIONS
 from .forms import TMATLocationsCSVUploadForm
 from django.contrib.gis.geos import Point
@@ -30,30 +29,36 @@ class TMAT_LOCATIONSAdmin(admin.ModelAdmin):
                 messages.error(request, "Please upload a valid CSV file.")
                 return redirect("admin:upload_csv")
 
-            # Read and process the CSV file
             try:
                 decoded_file = csv_file.read().decode('utf-8').splitlines()
                 reader = csv.reader(decoded_file)
-
+                
                 # Skip the header row
                 next(reader)
 
                 for row in reader:
+                    if len(row) != 8:
+                        messages.error(request, f"Row has an unexpected number of values: {row}")
+                        continue
+
                     code, werks, afd_name, block_name, no, soil, longitude, latitude = row
                     geom = Point(float(longitude), float(latitude), srid=4326)
 
-                    # Create TMAT_LOCATIONS object
-                    TMAT_LOCATIONS.objects.create(
+                    # Update or create TMAT_LOCATIONS object
+                    TMAT_LOCATIONS.objects.update_or_create(
                         code=code,
-                        werks=int(werks),
-                        afd_name=afd_name,
-                        block_name=block_name,
-                        no=no,
-                        soil=soil,
-                        longitude=longitude,
-                        latitude=latitude,
-                        geom=geom
+                        defaults={
+                            'werks': int(werks),
+                            'afd_name': afd_name,
+                            'block_name': block_name,
+                            'no': no,
+                            'soil': soil,
+                            'longitude': longitude,
+                            'latitude': latitude,
+                            'geom': geom
+                        }
                     )
+                
                 messages.success(request, "CSV file uploaded and data imported successfully.")
             except Exception as e:
                 messages.error(request, f"Error uploading CSV: {str(e)}")
@@ -65,8 +70,8 @@ class TMAT_LOCATIONSAdmin(admin.ModelAdmin):
             'title': 'Upload CSV File',
             'opts': self.model._meta
         }
-        return HttpResponse(render(request, "admin/upload_csv.html", context))
-    
+        return render(request, "admin/upload_csv.html", context)
+
     def changelist_view(self, request, extra_context=None):
         extra_context = extra_context or {}
         extra_context['upload_csv_url'] = 'upload-csv/'  # URL for CSV upload
