@@ -14,6 +14,7 @@ class TMAT_LOCATIONSAdmin(admin.ModelAdmin):
     search_fields = ('code', 'afd_name', 'block_name', 'no')
     list_filter = ('werks', 'afd_name', 'block_name', 'soil')
     readonly_fields = ('geom',)
+    change_list_template = "admin/change_list.html"
 
     def get_urls(self):
         urls = super().get_urls()
