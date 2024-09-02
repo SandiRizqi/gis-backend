@@ -72,8 +72,7 @@ INSTALLED_APPS = [
     'leaflet',
     'django_celery_beat',
     'django_celery_results',
-
-
+    'tmat',
 
     'api.apps.ApiConfig'
 
