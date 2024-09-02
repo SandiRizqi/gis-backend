@@ -46,7 +46,7 @@ class TMAT_LOCATIONSAdmin(admin.ModelAdmin):
                     code, werks, afd_name, block_name, no, soil, longitude, latitude = row
                     feature = {
                                 "type": "Point",
-                                "coordinates": [longitude, longitude]
+                                "coordinates": [float(longitude), float(latitude)]
                             }
                     geom = GEOSGeometry(json.dumps(feature))
 
