@@ -49,6 +49,8 @@ def tmat_statistics_view(request):
     })
 
 
+
+
 class CustomAdminSite(admin.AdminSite):
     def get_app_list(self, request, _=None):
         app_list = super().get_app_list(request)
