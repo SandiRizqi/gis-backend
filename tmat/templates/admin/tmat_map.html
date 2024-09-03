@@ -127,26 +127,44 @@
     <script>
         // Initialize the map
         var map = L.map('map').setView([0, 0], 2);  // Default center and zoom level
-
+    
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
-
+    
         // Initialize bounds
         var bounds = L.latLngBounds([]);
-
+    
+        // Function to get color based on nilai with range -60 to 0
+        function getColor(nilai) {
+            // Normalize the nilai value to a range between 0 and 1
+            var normalized = (nilai + 60) / 60; // -60 maps to 0, 0 maps to 1
+            var red = Math.round(255 * (1 - normalized)); // Red decreases as nilai increases
+            var green = Math.round(255 * normalized); // Green increases as nilai increases
+            return `rgb(${red}, ${green}, 0)`; // Gradient from red to green
+        }
+    
         // Add markers to the map and extend bounds
         {% for data in data_list %}
             var lat = {{ data.tmat_location.latitude }};
             var lon = {{ data.tmat_location.longitude }};
-            var marker = L.marker([lat, lon])
-                .bindPopup("<b>{{ data.tmat_location.code }}</b><br>Value: {{ data.nilai }}")
-                .addTo(map);
-
+            var nilai = {{ data.nilai }};
+    
+            var marker = L.circleMarker([lat, lon], {
+                radius: 8,
+                fillColor: getColor(nilai),
+                color: '#000',
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.8
+            })
+            .bindPopup("<b>{{ data.tmat_location.code }}</b><br>Value: " + nilai)
+            .addTo(map);
+    
             // Extend bounds to include this marker
             bounds.extend([lat, lon]);
         {% endfor %}
-
+    
         // Set the map view to fit all markers
         if (bounds.isValid()) {
             map.fitBounds(bounds);
