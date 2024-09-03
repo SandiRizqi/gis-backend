@@ -59,7 +59,7 @@
     <!-- Filter Form -->
     <form id="filter-form" method="get" action="{% url 'tmat-statistics' %}">
         <label for="tahun">Year:</label>
-        <select name="tahun" id="tahun">
+        <select name="tahun" id="tahun" required>
             <option value="">Select Year</option>
             {% for year in years %}
                 <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
@@ -67,7 +67,7 @@
         </select>
 
         <label for="bulan">Month:</label>
-        <select name="bulan" id="bulan">
+        <select name="bulan" id="bulan" required>
             <option value="">Select Month</option>
             {% for month in months %}
                 <option value="{{ month }}" {% if month == selected_month %}selected{% endif %}>{{ month }}</option>
@@ -75,7 +75,7 @@
         </select>
 
         <label for="periode">Period:</label>
-        <select name="periode" id="periode">
+        <select name="periode" id="periode" required>
             <option value="">Select Period</option>
             {% for period in periods %}
                 <option value="{{ period }}" {% if period == selected_period %}selected{% endif %}>{{ period }}</option>
