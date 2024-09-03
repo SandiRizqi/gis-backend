@@ -14,7 +14,7 @@ def admin_statistics_view(request):
 
 @staff_member_required
 def tmat_statistics_view(request):
-    return render(request, "admin/tmat_view.html", {
+    return render(request, "admin/tmat_map.html", {
         "title": "TMAT"
     })
 
@@ -36,7 +36,7 @@ class CustomAdminSite(admin.AdminSite):
                     {
                         "name": "TMAT",
                         "object_name": "tmat",
-                        "admin_url": "/admin/tmat/statistic",
+                        "admin_url": "/admin/tmat",
                         "view_only": True,
                     }
                 ],
@@ -48,6 +48,6 @@ class CustomAdminSite(admin.AdminSite):
         urls = super().get_urls()
         urls += [
             path("statistics/", admin_statistics_view, name="admin-statistics"),
-            path("tmat/statistic/", tmat_statistics_view, name="tmat-statistics"),
+            path("tmat/", tmat_statistics_view, name="tmat-statistics"),
         ]
         return urls
