@@ -36,7 +36,7 @@ class CustomAdminSite(admin.AdminSite):
                     {
                         "name": "TMAT",
                         "object_name": "tmat",
-                        "admin_url": "/admin/tmat",
+                        "admin_url": "/admin/tmatmap",
                         "view_only": True,
                     }
                 ],
@@ -48,6 +48,6 @@ class CustomAdminSite(admin.AdminSite):
         urls = super().get_urls()
         urls += [
             path("statistics/", admin_statistics_view, name="admin-statistics"),
-            path("tmat/", tmat_statistics_view, name="tmat-statistics"),
+            path("tmatmap/", tmat_statistics_view, name="tmat-statistics"),
         ]
         return urls
