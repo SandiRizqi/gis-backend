@@ -12,6 +12,13 @@ def admin_statistics_view(request):
     })
 
 
+@staff_member_required
+def tmat_statistics_view(request):
+    return render(request, "admin/tmat_view.html", {
+        "title": "TMAT"
+    })
+
+
 class CustomAdminSite(admin.AdminSite):
     def get_app_list(self, request, _=None):
         app_list = super().get_app_list(request)
@@ -41,5 +48,6 @@ class CustomAdminSite(admin.AdminSite):
         urls = super().get_urls()
         urls += [
             path("statistics/", admin_statistics_view, name="admin-statistics"),
+            path("tmat/statistic/", tmat_statistics_view, name="tmat-statistics"),
         ]
         return urls
