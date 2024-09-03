@@ -19,7 +19,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from .views import *
 
-from .admin import admin_statistics_view
+from .admin import admin_statistics_view, tmat_statistics_view
 
 
 urlpatterns = [
@@ -28,6 +28,11 @@ urlpatterns = [
         "admin/statistics/",
         admin.site.admin_view(admin_statistics_view),
         name="admin-statistics"
+    ),
+    path(   # new
+        "admin/tmatmap/",
+        admin.site.admin_view(tmat_statistics_view),
+        name="tmat-statistics"
     ),
     path('api/', include('api.urls')),
     path('admin/', admin.site.urls),
