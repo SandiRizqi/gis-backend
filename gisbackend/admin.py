@@ -30,7 +30,7 @@ def tmat_statistics_view(request):
         filters &= Q(periode=selected_period)
 
     # Apply filters to query
-    data_list = TMAT_LOCATION_DATA.objects.select_related('tmat_locations').filter(filters)
+    data_list = TMAT_LOCATION_DATA.objects.select_related('tmat_location').filter(filters)
 
     # Get filter options
     years = TMAT_LOCATION_DATA.objects.values_list('tahun', flat=True).distinct().order_by('tahun')
