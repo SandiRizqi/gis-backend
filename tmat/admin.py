@@ -17,7 +17,7 @@ class TMAT_LOCATIONSAdmin(admin.ModelAdmin):
     search_fields = ('code', 'afd_name', 'block_name', 'no')
     list_filter = ('werks', 'afd_name', 'block_name', 'soil')
     readonly_fields = ('geom',)
-    change_list_template = "admin/change_list.html"
+    change_form_template = 'admin/tmat_locations/change_form.html'
 
     def get_urls(self):
         urls = super().get_urls()
@@ -25,6 +25,11 @@ class TMAT_LOCATIONSAdmin(admin.ModelAdmin):
             path('upload-csv/', self.admin_site.admin_view(self.upload_csv), name='upload_csv'),
         ]
         return custom_urls + urls
+    
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        # Use the queryset to pass data to the map
+        return qs
 
     def upload_csv(self, request):
         if request.method == "POST":

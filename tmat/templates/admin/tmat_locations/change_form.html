@@ -1,0 +1,28 @@
+{% extends "admin/change_form.html" %}
+
+{% block extrahead %}
+    {{ block.super }}
+    {% load leaflet_tags %}
+    {% leaflet_css %}
+    {% leaflet_js %}
+{% endblock %}
+
+{% block content %}
+    {{ block.super }}
+    <div id="map" style="height: 500px;"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var map = L.map('map').setView([51.505, -0.09], 13);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+            }).addTo(map);
+
+            {% for location in object_list %}
+                L.marker([{{ location.latitude }}, {{ location.longitude }}])
+                    .addTo(map)
+                    .bindPopup('{{ location.code }}<br>{{ location.afd_name }}<br>{{ location.block_name }}');
+            {% endfor %}
+        });
+    </script>
+{% endblock %}
