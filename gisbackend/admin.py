@@ -29,7 +29,7 @@ class CustomAdminSite(admin.AdminSite):
                     {
                         "name": "TMAT",
                         "object_name": "tmat",
-                        "admin_url": "/admin/tmat",
+                        "admin_url": "/admin/tmat/statistic",
                         "view_only": True,
                     }
                 ],
