@@ -1,6 +1,7 @@
 from django.contrib.gis.db import models
 import json
 from django.contrib.gis.geos import GEOSGeometry
+from django.core.exceptions import ValidationError
 
 # Create your models here.
 class TMAT_LOCATIONS(models.Model):
@@ -34,3 +35,61 @@ class TMAT_LOCATIONS(models.Model):
 
         # Call the parent save method
         super().save(*args, **kwargs)
+
+
+
+
+class TMAT_LOCATION_DATA(models.Model):
+    tmat_location = models.ForeignKey(TMAT_LOCATIONS, on_delete=models.CASCADE)  # Reference to TMAT_LOCATIONS
+    tahun = models.PositiveIntegerField()  # Year
+    bulan = models.PositiveSmallIntegerField()  # Month, 1-12
+    hari = models.PositiveSmallIntegerField()  # Day, 1-31
+    periode = models.PositiveIntegerField()  # Period
+    nilai = models.IntegerField(null=True, blank=True)  # Allow null and blank values
+    input_date = models.CharField(max_length=11, blank=True, null=True)  # Date string in 'YYYYMMDD.P' format
+
+    def clean(self):
+        """Validate that input_date follows 'YYYYMMDD.P' format and extract values."""
+        if self.input_date:
+            try:
+                # Split the input_date at the decimal point
+                date_part, period_part = self.input_date.split('.')
+
+                # Ensure the date part is 8 digits (YYYYMMDD) and the period part is valid
+                if len(date_part) != 8 or not period_part.isdigit():
+                    raise ValueError
+
+                # Extract year, month, and day from the date_part
+                self.tahun = int(date_part[:4])
+                self.bulan = int(date_part[4:6])
+                self.hari = int(date_part[6:8])
+
+                # Extract the period as an integer
+                self.periode = int(period_part)
+
+                # Check if the extracted values are valid
+                if not (1 <= self.bulan <= 12):
+                    raise ValidationError("Bulan must be between 1 and 12.")
+                if not (1 <= self.hari <= 31):
+                    raise ValidationError("Hari must be between 1 and 31.")
+
+            except (ValueError, IndexError):
+                raise ValidationError("input_date must be in 'YYYYMMDD.P' format (e.g., '20240803.1').")
+
+    def save(self, *args, **kwargs):
+        """Automatically fill tahun, bulan, hari, and periode if input_date is provided."""
+        if self.input_date:
+            # If input_date exists, validate and populate the date fields
+            self.clean()
+        
+        # Call the parent class's save method
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.tmat_location.code} - {self.tahun}-{self.bulan}-{self.hari} - {self.periode}"
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(check=models.Q(bulan__gte=1, bulan__lte=12), name='valid_bulan'),
+            models.CheckConstraint(check=models.Q(hari__gte=1, hari__lte=31), name='valid_hari'),
+        ]
