@@ -22,7 +22,7 @@ class CustomAdminSite(admin.AdminSite):
                 "models": [
                     {
                         "name": "Hotspot_Statistic",
-                        "object_name": "statistics",
+                        "object_name": "hotspot_statistics",
                         "admin_url": "/admin/statistics",
                         "view_only": True,
                     },
