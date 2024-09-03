@@ -4,6 +4,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render
 from django.urls import path
 from tmat.models import TMAT_LOCATION_DATA
+from django.db.models import Q
 
 @staff_member_required
 def admin_statistics_view(request):
@@ -14,10 +15,37 @@ def admin_statistics_view(request):
 
 @staff_member_required
 def tmat_statistics_view(request):
-    data_list = TMAT_LOCATION_DATA.objects.select_related('tmat_location').all()
+    # Get filter parameters
+    selected_year = request.GET.get('tahun', '')
+    selected_month = request.GET.get('bulan', '')
+    selected_period = request.GET.get('periode', '')
+
+    # Build query based on filters
+    filters = Q()
+    if selected_year:
+        filters &= Q(tahun=selected_year)
+    if selected_month:
+        filters &= Q(bulan=selected_month)
+    if selected_period:
+        filters &= Q(periode=selected_period)
+
+    # Apply filters to query
+    data_list = TMAT_LOCATION_DATA.objects.select_related('tmat_locations').filter(filters)
+
+    # Get filter options
+    years = TMAT_LOCATION_DATA.objects.values_list('tahun', flat=True).distinct().order_by('tahun')
+    months = TMAT_LOCATION_DATA.objects.values_list('bulan', flat=True).distinct().order_by('bulan')
+    periods = TMAT_LOCATION_DATA.objects.values_list('periode', flat=True).distinct().order_by('periode')
+
     return render(request, "admin/tmat_map.html", {
         "title": "TMAT",
-        "data_list": data_list
+        "data_list": data_list,
+        "years": years,
+        "months": months,
+        "periods": periods,
+        "selected_year": selected_year,
+        "selected_month": selected_month,
+        "selected_period": selected_period
     })
 
 
