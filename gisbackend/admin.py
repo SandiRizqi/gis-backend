@@ -13,12 +13,21 @@ def admin_statistics_view(request):
     })
 
 
-@staff_member_required
 def tmat_statistics_view(request):
     # Get filter parameters
     selected_year = request.GET.get('tahun', '')
     selected_month = request.GET.get('bulan', '')
     selected_period = request.GET.get('periode', '')
+
+    # Determine the most recent values for year, month, and period
+    most_recent_data = TMAT_LOCATION_DATA.objects.order_by('-tahun', '-bulan', '-periode').first()
+    
+    if not selected_year and most_recent_data:
+        selected_year = most_recent_data.tahun
+    if not selected_month and most_recent_data:
+        selected_month = most_recent_data.bulan
+    if not selected_period and most_recent_data:
+        selected_period = most_recent_data.periode
 
     # Build query based on filters
     filters = Q()
