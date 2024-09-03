@@ -21,7 +21,7 @@ class CustomAdminSite(admin.AdminSite):
                 "app_label": "my_dashboard",
                 "models": [
                     {
-                        "name": "Statistics",
+                        "name": "Hotspot_Statistic",
                         "object_name": "statistics",
                         "admin_url": "/admin/statistics",
                         "view_only": True,
