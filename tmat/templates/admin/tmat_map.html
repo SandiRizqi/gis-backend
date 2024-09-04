@@ -206,8 +206,10 @@
         }
         
         marker.on('click', async function () {
+            var location = "{{ data.tmat_location.code }}";
+            var value = "{{ data.nilai }}";
             
-            await fetch('/tmat/tmat-location-data/')
+            await fetch('/tmat/tmat-location-data/?code={{data.tmat_location.code }}')
                 .then(response => response.json())
                 .then(data => {
                    resetCanvas();
@@ -221,8 +223,9 @@
                                 label: 'TMAT Location Data',
                                 data: data.values, // Values (y-axis)
                                 borderColor: 'rgba(75, 192, 192, 1)',
-                                borderWidth: 2,
-                                fill: false,
+                                borderWidth: 1,
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',  
+                                fill: true,
                             }]
                         },
                         options: {
@@ -237,15 +240,24 @@
                                     title: {
                                         display: true,
                                         text: 'Nilai'
+                                    },
+                                    min: -200,
+                                    max: 200,
+                                    ticks: {
+                                        min: -200,
+                                        max: 200,
+                                    font: {
+                                        size: 14 // Adjust tick size for y-axis
                                     }
+                                }
                                 }
                             }
                         }
                     });
                 });
             // Set modal content
-            document.getElementById('location-code').textContent = locationCode;
-            document.getElementById('value').textContent = nilai;
+            document.getElementById('location-code').textContent = location;
+            document.getElementById('value').textContent = value;
 
             // Show the modal
             var myModal = new bootstrap.Modal(document.getElementById('markerModal'));
