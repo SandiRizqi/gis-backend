@@ -52,6 +52,7 @@
             width: 100%;
             border-collapse: collapse;
         }
+     
 
         #data-table th,
         #data-table td {
@@ -226,9 +227,19 @@
                                 borderWidth: 1,
                                 backgroundColor: 'rgba(75, 192, 192, 0.2)',  
                                 fill: true,
+                            },
+                            {
+                            label: 'TMAT AVG',
+                                data: data.averages, // Values (y-axis)
+                                borderColor: 'rgba(250, 100, 100, 0.5)',
+                                borderWidth: 3,
+                                backgroundColor: 'rgba(250, 100, 100, 0.5)',  
+                                fill: false,
                             }]
                         },
                         options: {
+                            responsive: true,  // Make the chart responsive
+                            maintainAspectRatio: true,
                             scales: {
                                 x: {
                                     title: {
