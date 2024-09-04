@@ -37,8 +37,8 @@
         #data-table-container {
             flex: 1;
             /* Take up remaining space */
-            height: 60vh;
-            width: 50%;
+            height: 30vh;
+            width: 100%;
             /* Half of the container width */
             overflow-y: auto;
             /* Scroll vertically if needed */
@@ -51,6 +51,11 @@
         #data-table {
             width: 100%;
             border-collapse: collapse;
+        }
+
+        #chart-percentage {
+            height: 50vh;
+            width: 50%;
         }
      
 
@@ -104,40 +109,47 @@
     <!-- Flexbox container for map and table -->
     <div class="d-flex">
         <!-- Leaflet Map -->
-        <div id="map" style="width: 50%; height: 60vh;"></div>
+        <div id="map" style="width: 50%; height: 50vh;"></div>
 
         <!-- Data Table -->
-        <div id="data-table-container">
-            <h5>Data : {{selected_year}} - {{selected_month}}.{{selected_period}}</h5>
-            <table id="data-table">
-                <thead>
-                    <tr>
-                        <th>Location Code</th>
-                        <th>Year</th>
-                        <th>Month</th>
-                        <th>Day</th>
-                        <th>Period</th>
-                        <th>Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for data in data_list %}
-                    <tr>
-                        <td>{{ data.tmat_location.code }}</td>
-                        <td>{{ data.tahun }}</td>
-                        <td>{{ data.bulan }}</td>
-                        <td>{{ data.hari }}</td>
-                        <td>{{ data.periode }}</td>
-                        <td>{{ data.nilai }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6">No data available</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div id="chart-percentage" class="p-2">
+            <h6><strong>TMAT Percentage Passed -40 cm</strong></h6>
+            <canvas id="tmatChart-percentage"></canvas>
         </div>
+        
+    </div>
+    
+
+    <div id="data-table-container">
+        <h6><strong>TMAT Data</strong></h6>
+        <table id="data-table">
+            <thead>
+                <tr>
+                    <th>Location Code</th>
+                    <th>Year</th>
+                    <th>Month</th>
+                    <th>Day</th>
+                    <th>Period</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in data_list %}
+                <tr>
+                    <td>{{ data.tmat_location.code }}</td>
+                    <td>{{ data.tahun }}</td>
+                    <td>{{ data.bulan }}</td>
+                    <td>{{ data.hari }}</td>
+                    <td>{{ data.periode }}</td>
+                    <td>{{ data.nilai }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6">No data available</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
     <!-- Modal -->
@@ -287,5 +299,57 @@
         } else {
             map.setView([0, 0], 2); // Fallback to default view if no valid bounds
         }
+    </script>
+    
+  
+    <script>
+        async function GetChart() {
+                await fetch('/tmat/tmat-location-data-percentage/')
+                    .then(response => response.json())
+                    .then(data => {
+                        resetCanvas();
+                        // Create the chart using Chart.js
+                        const ctx = document.getElementById('tmatChart-percentage').getContext('2d');
+                        const chart = new Chart(ctx, {
+                            type: 'line', // Line chart
+                            data: {
+                                title : "Percentage",
+                                labels: data.labels, // Dates (x-axis)
+                                datasets: data.datasets,
+                            options: {
+                                spanGaps: false,
+                                responsive: true,  // Make the chart responsive
+                                maintainAspectRatio: true,
+                                scales: {
+                                    x: {
+                                        title: {
+                                            display: true,
+                                            text: 'Date'
+                                        }
+                                    },
+                                    y: {
+                                        title: {
+                                            display: true,
+                                            text: 'Percentage'
+                                        },
+                                        min: 0,
+                                        max: 100,
+                                        ticks: {
+                                            min: 0,
+                                            max: 100,
+                                            font: {
+                                                size: 14 // Adjust tick size for y-axis
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            
+                        }
+                        });
+                    })
+            };
+
+        GetChart();
     </script>
     {% endblock %}
