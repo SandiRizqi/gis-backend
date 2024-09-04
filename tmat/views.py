@@ -76,7 +76,8 @@ def tmat_location_percentage_data_chart(request):
             results_by_year[year] = {}
 
         # Calculate percentage
-        percentage = (entry['count_greater_than_40'] / entry['total_records']) * 100 if entry['total_records'] else None
+        percentage = round((entry['count_greater_than_40'] / entry['total_records']) * 100) if entry['total_records'] else None
+
 
         # Store percentage for the specific label, use `None` instead of 0
         results_by_year[year][label] = percentage
@@ -97,7 +98,7 @@ def tmat_location_percentage_data_chart(request):
             'label': str(year),  # Use the year as the dataset label
             'data': year_data,  # Percentages as data points (with `None` for missing labels)
             'borderColor': f'rgba({(year * 37) % 256}, {(year * 71) % 256}, {(year * 93) % 256}, 1)',  # Unique color per year
-            'borderWidth': 2,
+            'borderWidth': 3,
             'fill': False
         })
 
