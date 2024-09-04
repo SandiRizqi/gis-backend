@@ -210,7 +210,7 @@
             opacity: 1,
             fillOpacity: 0.8
         })
-            .bindPopup("<b>{{ data.tmat_location.code }}</b><br>Value: " + nilai)
+            .bindPopup("<b>{{ data.tmat_location.code }}</b><br>Value: " + nilai + `<br/><br/> <button id="popupButton-{{ data.tmat_location.code }}">Show</button>`)
             .addTo(map);
         
         function resetCanvas() {
@@ -219,73 +219,87 @@
         }
         
         marker.on('click', async function () {
+            resetCanvas()
             var location = "{{ data.tmat_location.code }}";
             var value = "{{ data.nilai }}";
             
-            await fetch('/tmat/tmat-location-data/?code={{data.tmat_location.code }}')
-                .then(response => response.json())
-                .then(data => {
-                   resetCanvas();
-                    // Create the chart using Chart.js
-                    const ctx = document.getElementById('tmatChart').getContext('2d');
-                    const chart = new Chart(ctx, {
-                        type: 'line', // Line chart
-                        data: {
-                            labels: data.labels, // Dates (x-axis)
-                            datasets: [{
-                                label: 'TMAT Location Data',
-                                data: data.values, // Values (y-axis)
-                                borderColor: 'rgba(75, 192, 192, 1)',
-                                borderWidth: 1,
-                                backgroundColor: 'rgba(75, 192, 192, 0.2)',  
-                                fill: true,
-                            },
-                            {
-                            label: 'TMAT AVG',
-                                data: data.averages, // Values (y-axis)
-                                borderColor: 'rgba(250, 100, 100, 0.5)',
-                                borderWidth: 3,
-                                backgroundColor: 'rgba(250, 100, 100, 0.5)',  
-                                fill: false,
-                            }]
-                        },
-                        options: {
-                            responsive: true,  // Make the chart responsive
-                            maintainAspectRatio: true,
-                            scales: {
-                                x: {
-                                    title: {
-                                        display: true,
-                                        text: 'Date'
-                                    }
-                                },
-                                y: {
-                                    title: {
-                                        display: true,
-                                        text: 'Nilai'
-                                    },
-                                    min: -200,
-                                    max: 200,
-                                    ticks: {
-                                        min: -200,
-                                        max: 200,
-                                    font: {
-                                        size: 14 // Adjust tick size for y-axis
-                                    }
-                                }
-                                }
-                            }
-                        }
-                    });
-                });
-            // Set modal content
             document.getElementById('location-code').textContent = location;
             document.getElementById('value').textContent = value;
-
-            // Show the modal
-            var myModal = new bootstrap.Modal(document.getElementById('markerModal'));
-            myModal.show();
+  
         });
+
+
+        marker.on('popupopen', function (e) {
+           
+                var buttonId = `popupButton-{{ data.tmat_location.code }}`;
+                document.getElementById(buttonId).addEventListener('click', async function () {
+                    
+                    await fetch('/tmat/tmat-location-data/?code={{data.tmat_location.code }}')
+                        .then(response => response.json())
+                        .then(data => {
+                            
+                            // Create the chart using Chart.js
+                            const ctx = document.getElementById('tmatChart').getContext('2d');
+                            const chart = new Chart(ctx, {
+                                type: 'line', // Line chart
+                                data: {
+                                    labels: data.labels, // Dates (x-axis)
+                                    datasets: [{
+                                        label: 'TMAT Location Data',
+                                        data: data.values, // Values (y-axis)
+                                        borderColor: 'rgba(75, 192, 192, 1)',
+                                        borderWidth: 1,
+                                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                        fill: true,
+                                    },
+                                    {
+                                        label: 'TMAT AVG',
+                                        data: data.averages, // Values (y-axis)
+                                        borderColor: 'rgba(250, 100, 100, 0.5)',
+                                        borderWidth: 3,
+                                        backgroundColor: 'rgba(250, 100, 100, 0.5)',
+                                        fill: false,
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,  // Make the chart responsive
+                                    maintainAspectRatio: true,
+                                    scales: {
+                                        x: {
+                                            title: {
+                                                display: true,
+                                                text: 'Date'
+                                            }
+                                        },
+                                        y: {
+                                            title: {
+                                                display: true,
+                                                text: 'Nilai'
+                                            },
+                                            min: -200,
+                                            max: 200,
+                                            ticks: {
+                                                min: -200,
+                                                max: 200,
+                                                font: {
+                                                    size: 14 // Adjust tick size for y-axis
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+
+                            // Show the modal
+                            //alert(`Button clicked for marker at [${lat}, ${lon}]`);
+                            var myModal = new bootstrap.Modal(document.getElementById('markerModal'));
+                            myModal.show();
+                        });
+
+                });
+        });
+
+        
 
 
         bounds.extend([lat, lon]);
