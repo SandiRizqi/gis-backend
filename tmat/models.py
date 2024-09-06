@@ -1,6 +1,7 @@
 from django.contrib.gis.db import models
 import json
 from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 
 # Create your models here.
@@ -13,6 +14,7 @@ class TMAT_LOCATIONS(models.Model):
     soil = models.CharField(max_length=100)
     longitude = models.DecimalField(max_digits=15, decimal_places=3, blank=True, null=True)
     latitude = models.DecimalField(max_digits=15, decimal_places=3, blank=True, null=True)
+    keterangan = models.CharField(max_length=100, blank=True, null=True)
     geojson = models.FileField(upload_to='geojson', blank=True, null=True, verbose_name='TMAT_geojson_file')
     geom = models.PointField(srid=4326, geography=True, null=True, blank=True, editable=True)
 
@@ -47,6 +49,8 @@ class TMAT_LOCATION_DATA(models.Model):
     periode = models.PositiveIntegerField()  # Period
     nilai = models.IntegerField(null=True, blank=True)  # Allow null and blank values
     input_date = models.CharField(max_length=11, blank=True, null=True)  # Date string in 'YYYYMMDD.P' format
+    photos = ArrayField(models.URLField(), blank=True, default=list) 
+ 
 
     def clean(self):
         """Validate that input_date follows 'YYYYMMDD.P' format and extract values."""
@@ -77,13 +81,27 @@ class TMAT_LOCATION_DATA(models.Model):
                 raise ValidationError("input_date must be in 'YYYYMMDD.P' format (e.g., '20240803.1').")
 
     def save(self, *args, **kwargs):
-        """Automatically fill tahun, bulan, hari, and periode if input_date is provided."""
+        """Automatically fill tahun, bulan, hari, and periode if input_date is provided and replace data if exists."""
+        # If input_date exists, validate and populate the date fields
         if self.input_date:
-            # If input_date exists, validate and populate the date fields
             self.clean()
-        
-        # Call the parent class's save method
-        super().save(*args, **kwargs)
+
+        # Check if a record with the same tmat_location, tahun, bulan, and periode exists
+        existing_record = TMAT_LOCATION_DATA.objects.filter(
+            tmat_location=self.tmat_location,
+            tahun=self.tahun,
+            bulan=self.bulan,
+            periode=self.periode
+        ).first()
+
+        if existing_record:
+            # Update the existing record's fields
+            existing_record.hari = self.hari
+            existing_record.nilai = self.nilai
+            existing_record.save()
+        else:
+            # Call the parent class's save method if no existing record is found
+            super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.tmat_location.code} - {self.tahun}-{self.bulan}-{self.hari} - {self.periode}"
@@ -93,3 +111,4 @@ class TMAT_LOCATION_DATA(models.Model):
             models.CheckConstraint(check=models.Q(bulan__gte=1, bulan__lte=12), name='valid_bulan'),
             models.CheckConstraint(check=models.Q(hari__gte=1, hari__lte=31), name='valid_hari'),
         ]
+        unique_together = ('tmat_location', 'tahun', 'bulan', 'periode')  # Ensure uniqueness for these fields
