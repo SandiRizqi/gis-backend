@@ -52,7 +52,7 @@ def tmat_location_percentage_data_chart(request):
             total_records=Count('id'),  # Total records in each group
             count_greater_than_40=Count(
                 Case(
-                    When(nilai__gt=-40, then=1),
+                    When(nilai__gte=-40, then=1),
                     output_field=IntegerField()
                 )
             )
