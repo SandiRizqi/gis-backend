@@ -1,5 +1,8 @@
 *.dev.env
 *.env
+redis.env
+#.env
 *.prod.env
 *.env.dev
 static/
+geocircle-512f9-6640610a0602.json
